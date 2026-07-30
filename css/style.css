@@ -1,0 +1,1149 @@
+:root {
+  --bg: #090b1f;
+  --sidebar: #07091b;
+  --card: #181c24;
+  --card-light: #20252f;
+
+  --primary: #6558ff;
+  --primary-light: #8379ff;
+  --secondary: #e144d1;
+  --blue: #4c62ff;
+  --green: #31c783;
+  --yellow: #f3b93f;
+  --red: #ff5b69;
+
+  --text: #f4f5fb;
+  --text-2: #b2b5c2;
+  --text-3: #727786;
+
+  --border: rgba(255, 255, 255, 0.07);
+  --shadow: 0 14px 40px rgba(0, 0, 0, 0.3);
+
+  --radius: 14px;
+  --sidebar-width: 230px;
+}
+
+/* =========================
+   CONFIGURAÇÕES GERAIS
+========================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at 75% 10%,
+      rgba(101, 88, 255, 0.08),
+      transparent 35%
+    ),
+    var(--bg);
+
+  color: var(--text);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #343849;
+  border-radius: 20px;
+}
+
+/* =========================
+   ESTRUTURA PRINCIPAL
+========================= */
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Também mantém compatibilidade
+   caso seu HTML use .container */
+
+.container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 28px 30px 50px;
+}
+
+/* Quando existir menu lateral */
+
+.main-content {
+  width: calc(100% - var(--sidebar-width));
+  margin-left: var(--sidebar-width);
+  padding: 28px 30px 50px;
+}
+
+/* =========================
+   MENU LATERAL
+========================= */
+
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+
+  width: var(--sidebar-width);
+  min-height: 100vh;
+
+  padding: 28px 18px;
+
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+
+  display: flex;
+  flex-direction: column;
+
+  z-index: 100;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 34px;
+  padding: 0 8px;
+}
+
+.sidebar-logo-icon {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 50%;
+
+  display: grid;
+  place-items: center;
+
+  color: white;
+  font-size: 18px;
+
+  background:
+    conic-gradient(
+      var(--primary) 0deg 270deg,
+      rgba(255, 255, 255, 0.12) 270deg
+    );
+}
+
+.sidebar-logo h2 {
+  font-size: 14px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.sidebar-section {
+  margin-bottom: 24px;
+}
+
+.sidebar-title {
+  display: block;
+
+  margin: 0 10px 10px;
+
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar-link {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 11px 13px;
+
+  border: 0;
+  border-radius: 9px;
+
+  background: transparent;
+  color: var(--text-2);
+
+  font-size: 13px;
+  font-weight: 500;
+
+  text-align: left;
+
+  transition: 0.2s ease;
+}
+
+.sidebar-link:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-link.active {
+  color: white;
+  background: var(--primary);
+}
+
+.sidebar-link span:first-child {
+  width: 20px;
+  text-align: center;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+}
+
+/* =========================
+   CABEÇALHO
+========================= */
+
+header {
+  margin-bottom: 24px;
+}
+
+header h1 {
+  font-size: 27px;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+}
+
+header p {
+  margin-top: 6px;
+
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+/* =========================
+   MENU SUPERIOR ANTIGO
+========================= */
+
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+
+  margin-bottom: 25px;
+}
+
+.menu-btn {
+  padding: 10px 16px;
+
+  border: 1px solid var(--border);
+  border-radius: 9px;
+
+  background: var(--card);
+  color: var(--text-2);
+
+  font-size: 13px;
+  font-weight: 600;
+
+  transition: 0.2s;
+}
+
+.menu-btn:hover {
+  color: white;
+  background: var(--card-light);
+  transform: translateY(-1px);
+}
+
+.menu-btn.active {
+  color: white;
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+/* =========================
+   PÁGINAS
+========================= */
+
+.page {
+  display: none;
+  animation: fade 0.25s ease;
+}
+
+.page.active {
+  display: block;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
+   CARDS PRINCIPAIS
+========================= */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+
+  margin-bottom: 18px;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+
+  min-height: 125px;
+  padding: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.025),
+      transparent
+    ),
+    var(--card);
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+
+  transition: 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(101, 88, 255, 0.25);
+}
+
+.card::after {
+  content: "";
+
+  position: absolute;
+  right: -20px;
+  bottom: -35px;
+
+  width: 130px;
+  height: 90px;
+
+  opacity: 0.35;
+  filter: blur(4px);
+
+  border-radius: 50% 50% 0 0;
+}
+
+.card h3 {
+  position: relative;
+  z-index: 2;
+
+  margin-bottom: 14px;
+
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.card h2 {
+  position: relative;
+  z-index: 2;
+
+  font-size: 25px;
+  font-weight: 750;
+  letter-spacing: -0.04em;
+}
+
+.card small {
+  position: relative;
+  z-index: 2;
+
+  display: block;
+  margin-top: 8px;
+
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.saldo {
+  border-left: 0;
+}
+
+.saldo::after {
+  background: var(--blue);
+}
+
+.receita {
+  border-left: 0;
+}
+
+.receita::after {
+  background: var(--green);
+}
+
+.gasto {
+  border-left: 0;
+}
+
+.gasto::after {
+  background: var(--secondary);
+}
+
+.economia {
+  border-left: 0;
+}
+
+.economia::after {
+  background: var(--yellow);
+}
+
+/* =========================
+   GRADE DO DASHBOARD
+========================= */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.dashboard-column {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dashboard-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+/* =========================
+   PAINÉIS E GRÁFICOS
+========================= */
+
+.grafico,
+.ultimos,
+.panel,
+.chart-card {
+  padding: 18px;
+
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+
+  margin-bottom: 14px;
+}
+
+.grafico h2,
+.ultimos h2,
+.panel h2,
+.chart-card h2 {
+  margin-bottom: 18px;
+
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+
+  margin-bottom: 18px;
+}
+
+.panel-header h2 {
+  margin: 0;
+}
+
+.panel-filter {
+  padding: 7px 10px;
+
+  border: 1px solid var(--border);
+  border-radius: 8px;
+
+  background: var(--card-light);
+  color: var(--text-2);
+
+  font-size: 11px;
+}
+
+/* Área reservada para gráficos */
+
+.chart-area {
+  position: relative;
+
+  width: 100%;
+  min-height: 240px;
+}
+
+.chart-area canvas {
+  width: 100% !important;
+  max-height: 270px;
+}
+
+/* =========================
+   INDICADORES CIRCULARES
+========================= */
+
+.circle-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+
+  min-height: 190px;
+}
+
+.donut {
+  --percentage: 65;
+  --donut-color: var(--primary);
+
+  position: relative;
+
+  width: 130px;
+  height: 130px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background:
+    conic-gradient(
+      var(--donut-color) calc(var(--percentage) * 1%),
+      #292e38 0
+    );
+}
+
+.donut::before {
+  content: "";
+
+  position: absolute;
+  inset: 18px;
+
+  border-radius: 50%;
+  background: var(--card);
+}
+
+.donut-content {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 2;
+}
+
+.donut-content strong {
+  font-size: 21px;
+}
+
+.donut-content span {
+  margin-top: 3px;
+
+  color: var(--text-3);
+  font-size: 9px;
+}
+
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: var(--text-2);
+  font-size: 10px;
+}
+
+.legend-color {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+}
+
+/* =========================
+   LIMITES
+========================= */
+
+.limits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.limit-card {
+  padding: 17px;
+
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+}
+
+.limit-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+
+  margin-bottom: 14px;
+}
+
+.limit-card h3 {
+  color: var(--text);
+  font-size: 13px;
+}
+
+.limit-card span {
+  color: var(--text-2);
+  font-size: 11px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 7px;
+
+  overflow: hidden;
+
+  border-radius: 20px;
+  background: #2b303a;
+}
+
+.progress-value {
+  height: 100%;
+  width: 0;
+
+  border-radius: inherit;
+  background: var(--primary);
+
+  transition: width 0.4s ease;
+}
+
+.progress-value.warning {
+  background: var(--yellow);
+}
+
+.progress-value.danger {
+  background: var(--red);
+}
+
+.limit-values {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 10px;
+
+  color: var(--text-3);
+  font-size: 10px;
+}
+
+/* =========================
+   POKER E BETS
+========================= */
+
+.game-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+
+  margin-bottom: 18px;
+}
+
+.poker-card,
+.bet-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(101, 88, 255, 0.07),
+      transparent
+    ),
+    var(--card);
+}
+
+.result-positive {
+  color: var(--green);
+}
+
+.result-negative {
+  color: var(--red);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 5px 9px;
+
+  border-radius: 20px;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.status.pending {
+  color: var(--yellow);
+  background: rgba(243, 185, 63, 0.12);
+}
+
+.status.win {
+  color: var(--green);
+  background: rgba(49, 199, 131, 0.12);
+}
+
+.status.loss {
+  color: var(--red);
+  background: rgba(255, 91, 105, 0.12);
+}
+
+/* =========================
+   FORMULÁRIOS
+========================= */
+
+form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+
+  margin-bottom: 22px;
+  padding: 20px;
+
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.form-group.full {
+  grid-column: 1 / -1;
+}
+
+form label {
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+
+  padding: 12px 13px;
+
+  border: 1px solid var(--border);
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #11151d;
+  color: var(--text);
+
+  font-size: 13px;
+
+  transition: 0.2s;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #626775;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(101, 88, 255, 0.12);
+}
+
+select option {
+  color: white;
+  background: #11151d;
+}
+
+textarea {
+  min-height: 95px;
+  resize: vertical;
+}
+
+form button,
+.primary-btn {
+  grid-column: 1 / -1;
+
+  padding: 13px 18px;
+
+  border: 0;
+  border-radius: 9px;
+
+  background: var(--primary);
+  color: white;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  transition: 0.2s;
+}
+
+form button:hover,
+.primary-btn:hover {
+  background: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+/* =========================
+   LISTAS E LANÇAMENTOS
+========================= */
+
+#listaReceitas,
+#listaGastos,
+#listaPoker,
+#listaBets,
+.transaction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.item,
+.transaction-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+
+  padding: 14px 15px;
+
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+
+  transition: 0.2s;
+}
+
+.item:hover,
+.transaction-item:hover {
+  background: var(--card-light);
+}
+
+.item-info {
+  min-width: 0;
+}
+
+.item h4,
+.transaction-item h4 {
+  margin-bottom: 4px;
+
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.item small,
+.transaction-item small {
+  color: var(--text-3);
+  font-size: 10px;
+}
+
+.valor {
+  flex-shrink: 0;
+
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.item-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.icon-btn {
+  width: 31px;
+  height: 31px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid var(--border);
+  border-radius: 8px;
+
+  background: transparent;
+  color: var(--text-2);
+
+  transition: 0.2s;
+}
+
+.icon-btn:hover {
+  color: white;
+  background: var(--card-light);
+}
+
+.icon-btn.delete:hover {
+  color: var(--red);
+  background: rgba(255, 91, 105, 0.1);
+}
+
+/* =========================
+   METAS
+========================= */
+
+.meta-card {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+
+  margin-bottom: 13px;
+  padding: 17px;
+
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+}
+
+.meta-card label {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+/* =========================
+   CONFIGURAÇÕES
+========================= */
+
+#config button {
+  width: 100%;
+
+  margin-bottom: 10px;
+  padding: 13px;
+
+  border: 1px solid var(--border);
+  border-radius: 9px;
+
+  background: var(--card);
+  color: var(--text);
+
+  font-weight: 650;
+
+  transition: 0.2s;
+
+  box-shadow: var(--shadow);
+}
+
+#config button:hover {
+  background: var(--card-light);
+  border-color: rgba(101, 88, 255, 0.3);
+}
+
+/* =========================
+   TABELAS
+========================= */
+
+.table-wrapper {
+  overflow-x: auto;
+
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 13px 15px;
+  text-align: left;
+
+  border-bottom: 1px solid var(--border);
+
+  font-size: 11px;
+}
+
+th {
+  color: var(--text-3);
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+td {
+  color: var(--text-2);
+}
+
+tr:last-child td {
+  border-bottom: 0;
+}
+
+/* =========================
+   RESPONSIVIDADE
+========================= */
+
+@media (max-width: 1100px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .limits-grid,
+  .game-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 800px) {
+  .app-layout {
+    display: block;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+
+    width: 100%;
+    min-height: auto;
+
+    padding: 12px 14px;
+
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+
+    overflow-x: auto;
+  }
+
+  .sidebar-logo,
+  .sidebar-title,
+  .sidebar-footer {
+    display: none;
+  }
+
+  .sidebar-section {
+    margin: 0;
+  }
+
+  .sidebar-menu {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .sidebar-link {
+    width: auto;
+    min-width: max-content;
+
+    padding: 9px 13px;
+  }
+
+  .main-content {
+    width: 100%;
+    margin-left: 0;
+    padding: 21px 16px 45px;
+  }
+
+  .container {
+    padding: 21px 16px 45px;
+  }
+}
+
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 23px;
+  }
+
+  .cards,
+  .dashboard-row,
+  .limits-grid,
+  .game-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    min-height: 110px;
+  }
+
+  form {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+
+  .form-group.full,
+  form button {
+    grid-column: auto;
+  }
+
+  .circle-summary {
+    flex-direction: column;
+  }
+
+  .item,
+  .transaction-item {
+    align-items: flex-start;
+  }
+
+  .valor {
+    font-size: 13px;
+  }
+}

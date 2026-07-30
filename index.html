@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Controle Financeiro</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+  <div class="app-layout">
+
+    <!-- MENU LATERAL -->
+
+    <aside class="sidebar">
+
+      <div class="sidebar-logo">
+
+        <div class="sidebar-logo-icon">
+          ◔
+        </div>
+
+        <div>
+          <h2>
+            Dashboard<br>
+            Finanças Pessoais
+          </h2>
+        </div>
+
+      </div>
+
+      <div class="sidebar-section">
+
+        <span class="sidebar-title">
+          Principal
+        </span>
+
+        <nav class="sidebar-menu">
+
+          <button
+            class="sidebar-link menu-btn active"
+            data-page="dashboard"
+          >
+            <span>⌂</span>
+            <span>Dashboard</span>
+          </button>
+
+          <button
+            class="sidebar-link menu-btn"
+            data-page="receitas"
+          >
+            <span>↗</span>
+            <span>Receitas</span>
+          </button>
+
+          <button
+            class="sidebar-link menu-btn"
+            data-page="gastos"
+          >
+            <span>↘</span>
+            <span>Gastos</span>
+          </button>
+
+          <button
+            class="sidebar-link menu-btn"
+            data-page="limites"
+          >
+            <span>◎</span>
+            <span>Limites</span>
+          </button>
+
+          <button
+            class="sidebar-link menu-btn"
+            data-page="poker"
+          >
+            <span>♠</span>
+            <span>Poker</span>
+          </button>
+
+          <button
+            class="sidebar-link menu-btn"
+            data-page="bets"
+          >
+            <span>⚽</span>
+            <span>Bets</span>
+          </button>
+
+        </nav>
+
+      </div>
+
+      <div class="sidebar-section sidebar-footer">
+
+        <span class="sidebar-title">
+          Sistema
+        </span>
+
+        <nav class="sidebar-menu">
+
+          <button
+            class="sidebar-link menu-btn"
+            data-page="config"
+          >
+            <span>⚙</span>
+            <span>Configurações</span>
+          </button>
+
+        </nav>
+
+      </div>
+
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+
+    <main class="main-content">
+
+      <!-- DASHBOARD -->
+
+      <section
+        id="dashboard"
+        class="page active"
+      >
+
+        <header>
+          <h1>Visão Geral</h1>
+
+          <p>
+            Acompanhe sua vida financeira em um só lugar
+          </p>
+        </header>
+
+        <div class="cards">
+
+          <div class="card saldo">
+
+            <h3>Saldo atual</h3>
+
+            <h2 id="saldoAtual">
+              R$ 0,00
+            </h2>
+
+            <small>
+              Saldo disponível
+            </small>
+
+          </div>
+
+          <div class="card receita">
+
+            <h3>Receitas do mês</h3>
+
+            <h2 id="totalReceitas">
+              R$ 0,00
+            </h2>
+
+            <small>
+              Total recebido
+            </small>
+
+          </div>
+
+          <div class="card gasto">
+
+            <h3>Despesas do mês</h3>
+
+            <h2 id="totalGastos">
+              R$ 0,00
+            </h2>
+
+            <small>
+              Total utilizado
+            </small>
+
+          </div>
+
+          <div class="card economia">
+
+            <h3>Economizado</h3>
+
+            <h2 id="economizado">
+              R$ 0,00
+            </h2>
+
+            <small>
+              Diferença entre receitas e despesas
+            </small>
+
+          </div>
+
+        </div>
+
+        <div class="dashboard-grid">
+
+          <!-- COLUNA ESQUERDA -->
+
+          <div class="dashboard-column">
+
+            <div class="grafico">
+
+              <div class="panel-header">
+
+                <h2>
+                  Análise mensal
+                </h2>
+
+                <select id="filtroAnoDashboard">
+
+                  <option value="2026">
+                    2026
+                  </option>
+
+                  <option value="2025">
+                    2025
+                  </option>
+
+                  <option value="2024">
+                    2024
+                  </option>
+
+                </select>
+
+              </div>
+
+              <div class="chart-area">
+
+                <canvas id="graficoMensal"></canvas>
+
+              </div>
+
+            </div>
+
+            <div class="ultimos">
+
+              <h2>
+                Últimos lançamentos
+              </h2>
+
+              <div id="ultimosLancamentos">
+
+                <p class="empty-message">
+                  Nenhum lançamento registrado.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- COLUNA DIREITA -->
+
+          <div class="dashboard-column">
+
+            <div class="panel">
+
+              <h2>
+                Distribuição das despesas
+              </h2>
+
+              <div class="circle-summary">
+
+                <div
+                  class="donut"
+                  id="donutDespesas"
+                  style="
+                    --percentage: 0;
+                    --donut-color: var(--primary);
+                  "
+                >
+
+                  <div class="donut-content">
+
+                    <strong id="percentualDespesas">
+                      0%
+                    </strong>
+
+                    <span>
+                      utilizado
+                    </span>
+
+                  </div>
+
+                </div>
+
+                <div
+                  class="chart-legend"
+                  id="legendaDespesas"
+                >
+
+                  <div class="legend-item">
+
+                    <span
+                      class="legend-color"
+                      style="background: var(--primary);"
+                    ></span>
+
+                    Alimentação
+
+                  </div>
+
+                  <div class="legend-item">
+
+                    <span
+                      class="legend-color"
+                      style="background: var(--secondary);"
+                    ></span>
+
+                    Transporte
+
+                  </div>
+
+                  <div class="legend-item">
+
+                    <span
+                      class="legend-color"
+                      style="background: var(--green);"
+                    ></span>
+
+                    Lazer
+
+                  </div>
+
+                  <div class="legend-item">
+
+                    <span
+                      class="legend-color"
+                      style="background: var(--yellow);"
+                    ></span>
+
+                    Outros
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="panel">
+
+              <h2>
+                Resultado de Poker e Bets
+              </h2>
+
+              <div class="dashboard-row">
+
+                <div class="card poker-card">
+
+                  <h3>Poker</h3>
+
+                  <h2 id="resultadoPokerDashboard">
+                    R$ 0,00
+                  </h2>
+
+                  <small>
+                    Resultado no mês
+                  </small>
+
+                </div>
+
+                <div class="card bet-card">
+
+                  <h3>Bets</h3>
+
+                  <h2 id="resultadoBetsDashboard">
+                    R$ 0,00
+                  </h2>
+
+                  <small>
+                    Resultado no mês
+                  </small>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- RECEITAS -->
+
+      <section
+        id="receitas"
+        class="page"
+      >
+
+        <header>
+
+          <h1>Receitas</h1>
+
+          <p>
+            Registre todos os valores que entram
+          </p>
+
+        </header>
+
+        <form id="formReceita">
+
+          <div class="form-group">
+
+            <label for="valorReceita">
+              Valor
+            </label>
+
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="R$ 0,00"
+              id="valorReceita"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="categoriaReceita">
+              Categoria
+            </label>
+
+            <select
+              id="categoriaReceita"
+              required
+            >
+
+              <option value="Salário">
+                Salário
+              </option>
+
+              <option value="Renda Fixa">
+                Renda fixa
+              </option>
+
+              <option value="Poker">
+                Poker
+              </option>
+
+              <option value="Bets">
+                Bets
+              </option>
+
+              <option value="Renda Extra">
+                Renda extra
+              </option>
+
+              <option value="Outros">
+                Outros
+              </option>
+
+            </select>
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="descricaoReceita">
+              Descrição
+            </label>
+
+            <input
+              type="text"
+              placeholder="Ex.: salário mensal"
+              id="descricaoReceita"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="dataReceita">
+              Data
+            </label>
+
+            <input
+              type="date"
+              id="dataReceita"
+              required
+            >
+
+          </div>
+
+          <button type="submit">
+            Salvar receita
+          </button>
+
+        </form>
+
+        <div id="listaReceitas"></div>
+
+      </section>
+
+      <!-- GASTOS -->
+
+      <section
+        id="gastos"
+        class="page"
+      >
+
+        <header>
+
+          <h1>Gastos</h1>
+
+          <p>
+            Registre e acompanhe suas despesas
+          </p>
+
+        </header>
+
+        <form id="formGasto">
+
+          <div class="form-group">
+
+            <label for="valorGasto">
+              Valor
+            </label>
+
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="R$ 0,00"
+              id="valorGasto"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="categoriaGasto">
+              Categoria
+            </label>
+
+            <select
+              id="categoriaGasto"
+              required
+            >
+
+              <option value="Alimentação">
+                Alimentação
+              </option>
+
+              <option value="Casa">
+                Casa
+              </option>
+
+              <option value="Transporte">
+                Transporte
+              </option>
+
+              <option value="Compras">
+                Compras
+              </option>
+
+              <option value="Saúde">
+                Saúde
+              </option>
+
+              <option value="Lazer">
+                Lazer
+              </option>
+
+              <option value="Estudos">
+                Estudos
+              </option>
+
+              <option value="Assinaturas">
+                Assinaturas
+              </option>
+
+              <option value="Outros">
+                Outros
+              </option>
+
+            </select>
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="descricaoGasto">
+              Descrição
+            </label>
+
+            <input
+              type="text"
+              placeholder="Ex.: supermercado"
+              id="descricaoGasto"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="dataGasto">
+              Data
+            </label>
+
+            <input
+              type="date"
+              id="dataGasto"
+              required
+            >
+
+          </div>
+
+          <button type="submit">
+            Salvar gasto
+          </button>
+
+        </form>
+
+        <div id="listaGastos"></div>
+
+      </section>
+
+      <!-- LIMITES -->
+
+      <section
+        id="limites"
+        class="page"
+      >
+
+        <header>
+
+          <h1>Limites</h1>
+
+          <p>
+            Defina quanto pode gastar em cada área
+          </p>
+
+        </header>
+
+        <form id="formLimites">
+
+          <div class="form-group">
+
+            <label for="limiteMensal">
+              Limite mensal geral
+            </label>
+
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              id="limiteMensal"
+              placeholder="R$ 0,00"
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="metaEconomia">
+              Meta de economia
+            </label>
+
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              id="metaEconomia"
+              placeholder="R$ 0,00"
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="limiteAlimentacao">
+              Alimentação
+            </label>
+
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              id="limiteAlimentacao"
+              placeholder="R$ 0,00"
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="limiteTransporte">
+              Transporte
+            </label>
+
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              id="limiteTransporte"
+              placeholder="R$ 0,00"
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="limiteLazer">
+              Lazer
+            </label>
+
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              id="limiteLazer"
+              placeholder="R$ 0,00"
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="limitePoker">
+              Poker
+            </label>
+
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              id="limitePoker"
+              placeholder="R$ 0,00"
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="limiteBets">
+              Bets
+            </label>
+
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              id="limiteBets"
+              placeholder="R$ 0,00"
+            >
+
+          </div>
+
+          <button type="submit">
+            Salvar limites
+          </button>
+
+        </form>
+
+        <div
+          class="limits-grid"
+          id="resumoLimites"
+        >
+
+          <div class="limit-card">
+
+            <div class="limit-card-header">
+
+              <h3>Alimentação</h3>
+
+              <span id="percentualAlimentacao">
+                0%
+              </span>
+
+            </div>
+
+            <div class="progress-bar">
+
+              <div
+                class="progress-value"
+                id="barraAlimentacao"
+              ></div>
+
+            </div>
+
+            <div class="limit-values">
+
+              <span id="gastoAlimentacao">
+                R$ 0,00
+              </span>
+
+              <span id="totalLimiteAlimentacao">
+                R$ 0,00
+              </span>
+
+            </div>
+
+          </div>
+
+          <div class="limit-card">
+
+            <div class="limit-card-header">
+
+              <h3>Transporte</h3>
+
+              <span id="percentualTransporte">
+                0%
+              </span>
+
+            </div>
+
+            <div class="progress-bar">
+
+              <div
+                class="progress-value"
+                id="barraTransporte"
+              ></div>
+
+            </div>
+
+            <div class="limit-values">
+
+              <span id="gastoTransporte">
+                R$ 0,00
+              </span>
+
+              <span id="totalLimiteTransporte">
+                R$ 0,00
+              </span>
+
+            </div>
+
+          </div>
+
+          <div class="limit-card">
+
+            <div class="limit-card-header">
+
+              <h3>Lazer</h3>
+
+              <span id="percentualLazer">
+                0%
+              </span>
+
+            </div>
+
+            <div class="progress-bar">
+
+              <div
+                class="progress-value"
+                id="barraLazer"
+              ></div>
+
+            </div>
+
+            <div class="limit-values">
+
+              <span id="gastoLazer">
+                R$ 0,00
+              </span>
+
+              <span id="totalLimiteLazer">
+                R$ 0,00
+              </span>
+
+            </div>
+
+          </div>
+
+          <div class="limit-card">
+
+            <div class="limit-card-header">
+
+              <h3>Poker</h3>
+
+              <span id="percentualPoker">
+                0%
+              </span>
+
+            </div>
+
+            <div class="progress-bar">
+
+              <div
+                class="progress-value"
+                id="barraPoker"
+              ></div>
+
+            </div>
+
+            <div class="limit-values">
+
+              <span id="gastoPoker">
+                R$ 0,00
+              </span>
+
+              <span id="totalLimitePoker">
+                R$ 0,00
+              </span>
+
+            </div>
+
+          </div>
+
+          <div class="limit-card">
+
+            <div class="limit-card-header">
+
+              <h3>Bets</h3>
+
+              <span id="percentualBets">
+                0%
+              </span>
+
+            </div>
+
+            <div class="progress-bar">
+
+              <div
+                class="progress-value"
+                id="barraBets"
+              ></div>
+
+            </div>
+
+            <div class="limit-values">
+
+              <span id="gastoBets">
+                R$ 0,00
+              </span>
+
+              <span id="totalLimiteBets">
+                R$ 0,00
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- POKER -->
+
+      <section
+        id="poker"
+        class="page"
+      >
+
+        <header>
+
+          <h1>Poker</h1>
+
+          <p>
+            Controle sua banca e os resultados das sessões
+          </p>
+
+        </header>
+
+        <div class="game-summary">
+
+          <div class="card poker-card">
+
+            <h3>Banca atual</h3>
+
+            <h2 id="bancaPoker">
+              R$ 0,00
+            </h2>
+
+          </div>
+
+          <div class="card poker-card">
+
+            <h3>Total investido</h3>
+
+            <h2 id="totalInvestidoPoker">
+              R$ 0,00
+            </h2>
+
+          </div>
+
+          <div class="card poker-card">
+
+            <h3>Lucro ou prejuízo</h3>
+
+            <h2 id="resultadoPoker">
+              R$ 0,00
+            </h2>
+
+          </div>
+
+        </div>
+
+        <form id="formPoker">
+
+          <div class="form-group">
+
+            <label for="dataPoker">
+              Data
+            </label>
+
+            <input
+              type="date"
+              id="dataPoker"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="modalidadePoker">
+              Modalidade
+            </label>
+
+            <select
+              id="modalidadePoker"
+              required
+            >
+
+              <option value="Cash Game">
+                Cash game
+              </option>
+
+              <option value="Torneio">
+                Torneio
+              </option>
+
+              <option value="Sit & Go">
+                Sit & Go
+              </option>
+
+            </select>
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="localPoker">
+              Plataforma ou local
+            </label>
+
+            <input
+              type="text"
+              id="localPoker"
+              placeholder="Ex.: PokerStars"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="buyinPoker">
+              Buy-in
+            </label>
+
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              id="buyinPoker"
+              placeholder="R$ 0,00"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="reentradaPoker">
+              Reentradas
+            </label>
+
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              id="reentradaPoker"
+              value="0"
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="retornoPoker">
+              Valor recebido
+            </label>
+
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              id="retornoPoker"
+              placeholder="R$ 0,00"
+              required
+            >
+
+          </div>
+
+          <div class="form-group full">
+
+            <label for="observacaoPoker">
+              Observação
+            </label>
+
+            <input
+              type="text"
+              id="observacaoPoker"
+              placeholder="Informações adicionais"
+            >
+
+          </div>
+
+          <button type="submit">
+            Salvar sessão
+          </button>
+
+        </form>
+
+        <div id="listaPoker"></div>
+
+      </section>
+
+      <!-- BETS -->
+
+      <section
+        id="bets"
+        class="page"
+      >
+
+        <header>
+
+          <h1>Bets</h1>
+
+          <p>
+            Registre suas apostas e acompanhe sua banca
+          </p>
+
+        </header>
+
+        <div class="game-summary">
+
+          <div class="card bet-card">
+
+            <h3>Banca atual</h3>
+
+            <h2 id="bancaBets">
+              R$ 0,00
+            </h2>
+
+          </div>
+
+          <div class="card bet-card">
+
+            <h3>Total apostado</h3>
+
+            <h2 id="totalApostado">
+              R$ 0,00
+            </h2>
+
+          </div>
+
+          <div class="card bet-card">
+
+            <h3>Lucro ou prejuízo</h3>
+
+            <h2 id="resultadoBets">
+              R$ 0,00
+            </h2>
+
+          </div>
+
+        </div>
+
+        <form id="formBet">
+
+          <div class="form-group">
+
+            <label for="dataBet">
+              Data
+            </label>
+
+            <input
+              type="date"
+              id="dataBet"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="casaBet">
+              Casa de aposta
+            </label>
+
+            <input
+              type="text"
+              id="casaBet"
+              placeholder="Ex.: Bet365"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="eventoBet">
+              Evento
+            </label>
+
+            <input
+              type="text"
+              id="eventoBet"
+              placeholder="Ex.: Cruzeiro x Atlético"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="mercadoBet">
+              Mercado
+            </label>
+
+            <input
+              type="text"
+              id="mercadoBet"
+              placeholder="Ex.: Cruzeiro vence"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="oddBet">
+              Odd
+            </label>
+
+            <input
+              type="number"
+              step="0.01"
+              min="1"
+              id="oddBet"
+              placeholder="1.80"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="valorBet">
+              Valor apostado
+            </label>
+
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              id="valorBet"
+              placeholder="R$ 0,00"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="statusBet">
+              Status
+            </label>
+
+            <select
+              id="statusBet"
+              required
+            >
+
+              <option value="Pendente">
+                Pendente
+              </option>
+
+              <option value="Ganha">
+                Ganha
+              </option>
+
+              <option value="Perdida">
+                Perdida
+              </option>
+
+              <option value="Anulada">
+                Anulada
+              </option>
+
+              <option value="Cash Out">
+                Cash out
+              </option>
+
+            </select>
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="retornoBet">
+              Retorno recebido
+            </label>
+
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              id="retornoBet"
+              value="0"
+            >
+
+          </div>
+
+          <button type="submit">
+            Salvar aposta
+          </button>
+
+        </form>
+
+        <div id="listaBets"></div>
+
+      </section>
+
+      <!-- CONFIGURAÇÕES -->
+
+      <section
+        id="config"
+        class="page"
+      >
+
+        <header>
+
+          <h1>Configurações</h1>
+
+          <p>
+            Gerencie os dados do aplicativo
+          </p>
+
+        </header>
+
+        <button id="exportar">
+          Exportar backup
+        </button>
+
+        <button id="importar">
+          Importar backup
+        </button>
+
+        <button id="limpar">
+          Apagar todos os dados
+        </button>
+
+      </section>
+
+    </main>
+
+  </div>
+
+<script src="js/utils.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/categories.js"></script>
+<script src="js/expenses.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+
+</html>
