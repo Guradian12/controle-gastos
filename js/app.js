@@ -46,8 +46,8 @@ const App = {
     );
 
     const root =
-      document.getElementById("app") ||
-      document.body;
+  document.querySelector(".main-content") ||
+  document.body;
 
     root.innerHTML = `
       <main class="startup-error">
