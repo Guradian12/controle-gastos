@@ -260,7 +260,7 @@ const Expenses = {
       tipo: type,
       descricao: description,
       valor: value,
-      data,
+      data: date,
       categoriaId: category.id,
       categoriaNome: category.nome,
       observacao: notes,
