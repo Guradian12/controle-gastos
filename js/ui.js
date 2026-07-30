@@ -1,8 +1,8 @@
 /**
  * Interface da aplicação.
  *
- * Esta versão NÃO cria o HTML.
- * Ela utiliza os elementos que já existem no index.html.
+ * Esta versão não cria o HTML.
+ * Ela utiliza os elementos existentes no index.html.
  */
 
 const UI = {
@@ -46,7 +46,7 @@ const UI = {
   },
 
   /**
-   * Evita inserção de HTML em textos.
+   * Protege textos inseridos no HTML.
    */
   escapeHTML(value) {
     const element =
@@ -71,7 +71,7 @@ const UI = {
   },
 
   /**
-   * Atualiza valor monetário e sua cor.
+   * Atualiza um valor monetário e sua cor.
    */
   setCurrency(id, value) {
     const element =
@@ -81,7 +81,8 @@ const UI = {
       return;
     }
 
-    const number = Number(value) || 0;
+    const number =
+      Number(value) || 0;
 
     element.textContent =
       this.formatCurrency(number);
@@ -93,16 +94,22 @@ const UI = {
     );
 
     if (number > 0) {
-      element.classList.add("positive");
+      element.classList.add(
+        "positive"
+      );
     } else if (number < 0) {
-      element.classList.add("negative");
+      element.classList.add(
+        "negative"
+      );
     } else {
-      element.classList.add("neutral");
+      element.classList.add(
+        "neutral"
+      );
     }
   },
 
   /**
-   * Retorna a data de hoje.
+   * Retorna a data atual.
    */
   getToday() {
     if (
@@ -118,7 +125,7 @@ const UI = {
   },
 
   /**
-   * Define a data atual nos formulários.
+   * Preenche datas vazias com a data atual.
    */
   setDefaultDates() {
     [
@@ -131,17 +138,20 @@ const UI = {
         document.getElementById(id);
 
       if (input && !input.value) {
-        input.value = this.getToday();
+        input.value =
+          this.getToday();
       }
     });
   },
 
   /**
-   * Troca de página.
+   * Troca a página exibida.
    */
   navigate(pageId) {
     const targetPage =
-      document.getElementById(pageId);
+      document.getElementById(
+        pageId
+      );
 
     if (!targetPage) {
       console.warn(
@@ -154,16 +164,22 @@ const UI = {
     document
       .querySelectorAll(".page")
       .forEach(page => {
-        page.classList.remove("active");
+        page.classList.remove(
+          "active"
+        );
       });
 
     document
       .querySelectorAll(".menu-btn")
       .forEach(button => {
-        button.classList.remove("active");
+        button.classList.remove(
+          "active"
+        );
       });
 
-    targetPage.classList.add("active");
+    targetPage.classList.add(
+      "active"
+    );
 
     document
       .querySelector(
@@ -171,13 +187,14 @@ const UI = {
       )
       ?.classList.add("active");
 
-    this.currentPage = pageId;
+    this.currentPage =
+      pageId;
 
     this.refreshPage(pageId);
   },
 
   /**
-   * Eventos do menu lateral.
+   * Configura os eventos do menu.
    */
   bindNavigation() {
     document
@@ -195,7 +212,7 @@ const UI = {
   },
 
   /**
-   * Retorna o ano selecionado no Dashboard.
+   * Retorna o ano selecionado.
    */
   getSelectedYear() {
     const select =
@@ -259,8 +276,14 @@ const UI = {
         summary.bets
       );
 
-      this.renderDashboardChart(data);
-      this.renderExpenseDistribution(data);
+      this.renderDashboardChart(
+        data
+      );
+
+      this.renderExpenseDistribution(
+        data
+      );
+
       this.renderRecentTransactions(
         data.atividadesRecentes
       );
@@ -273,7 +296,7 @@ const UI = {
   },
 
   /**
-   * Gráfico mensal principal.
+   * Renderiza o gráfico principal.
    */
   renderDashboardChart(data) {
     const canvas =
@@ -316,11 +339,25 @@ const UI = {
                   "Resultado do mês",
 
                 data: [
-                  Number(summary.receitas) || 0,
-                  Number(summary.gastos) || 0,
-                  Number(summary.saldoPessoal) || 0,
-                  Number(summary.poker) || 0,
-                  Number(summary.bets) || 0
+                  Number(
+                    summary.receitas
+                  ) || 0,
+
+                  Number(
+                    summary.gastos
+                  ) || 0,
+
+                  Number(
+                    summary.saldoPessoal
+                  ) || 0,
+
+                  Number(
+                    summary.poker
+                  ) || 0,
+
+                  Number(
+                    summary.bets
+                  ) || 0
                 ],
 
                 borderWidth: 1,
@@ -354,7 +391,9 @@ const UI = {
 
                 ticks: {
                   callback: value =>
-                    this.formatCurrency(value)
+                    this.formatCurrency(
+                      value
+                    )
                 }
               }
             }
@@ -371,15 +410,22 @@ const UI = {
       data.resumo || {};
 
     const income =
-      Number(summary.receitas) || 0;
+      Number(
+        summary.receitas
+      ) || 0;
 
     const expenses =
-      Number(summary.gastos) || 0;
+      Number(
+        summary.gastos
+      ) || 0;
 
     const percentage =
       income > 0
         ? Math.min(
-            (expenses / income) * 100,
+            (
+              expenses /
+              income
+            ) * 100,
             100
           )
         : 0;
@@ -402,12 +448,13 @@ const UI = {
     );
 
     this.renderExpenseLegend(
-      data.graficos?.gastosPorCategoria
+      data.graficos
+        ?.gastosPorCategoria
     );
   },
 
   /**
-   * Atualiza a legenda das categorias.
+   * Atualiza a legenda de gastos.
    */
   renderExpenseLegend(categories) {
     const container =
@@ -468,7 +515,7 @@ const UI = {
   },
 
   /**
-   * Últimos lançamentos.
+   * Atualiza os últimos lançamentos.
    */
   renderRecentTransactions(activities) {
     const container =
@@ -516,7 +563,9 @@ const UI = {
             </div>
 
             <strong class="${
-              Number(activity.result) >= 0
+              Number(
+                activity.result
+              ) >= 0
                 ? "positive"
                 : "negative"
             }">
@@ -530,22 +579,26 @@ const UI = {
   },
 
   /**
-   * Procura uma função disponível em um módulo.
+   * Procura um método disponível em um módulo.
    */
   callModuleMethod(
     module,
     methodNames,
     ...parameters
   ) {
-    for (const methodName of methodNames) {
+    for (
+      const methodName
+      of methodNames
+    ) {
       if (
         module &&
-        typeof module[methodName] ===
-          "function"
+        typeof module[
+          methodName
+        ] === "function"
       ) {
-        return module[methodName](
-          ...parameters
-        );
+        return module[
+          methodName
+        ](...parameters);
       }
     }
 
@@ -565,18 +618,23 @@ const UI = {
         "formReceita"
       );
 
-    form?.addEventListener(
+    if (!form) {
+      return;
+    }
+
+    form.addEventListener(
       "submit",
       event => {
         event.preventDefault();
 
         try {
           const payload = {
-            valor: Number(
-              document.getElementById(
-                "valorReceita"
-              ).value
-            ),
+            valor:
+              Number(
+                document.getElementById(
+                  "valorReceita"
+                ).value
+              ),
 
             categoria:
               document.getElementById(
@@ -607,6 +665,7 @@ const UI = {
           );
 
           form.reset();
+
           this.setDefaultDates();
 
           this.showMessage(
@@ -636,18 +695,23 @@ const UI = {
         "formGasto"
       );
 
-    form?.addEventListener(
+    if (!form) {
+      return;
+    }
+
+    form.addEventListener(
       "submit",
       event => {
         event.preventDefault();
 
         try {
           const payload = {
-            valor: Number(
-              document.getElementById(
-                "valorGasto"
-              ).value
-            ),
+            valor:
+              Number(
+                document.getElementById(
+                  "valorGasto"
+                ).value
+              ),
 
             categoria:
               document.getElementById(
@@ -676,6 +740,7 @@ const UI = {
           );
 
           form.reset();
+
           this.setDefaultDates();
 
           this.showMessage(
@@ -705,7 +770,11 @@ const UI = {
         "formPoker"
       );
 
-    form?.addEventListener(
+    if (!form) {
+      return;
+    }
+
+    form.addEventListener(
       "submit",
       event => {
         event.preventDefault();
@@ -739,7 +808,8 @@ const UI = {
               ).value,
 
             buyIn:
-              buyIn + reentry,
+              buyIn +
+              reentry,
 
             retorno:
               returnValue,
@@ -761,6 +831,7 @@ const UI = {
           });
 
           form.reset();
+
           this.setDefaultDates();
 
           this.showMessage(
@@ -782,7 +853,7 @@ const UI = {
   },
 
   /**
-   * Formulário de Bets.
+   * Formulário simplificado de Bets.
    */
   bindBetForm() {
     const form =
@@ -790,76 +861,154 @@ const UI = {
         "formBet"
       );
 
-    form?.addEventListener(
+    if (!form) {
+      return;
+    }
+
+    const statusSelect =
+      document.getElementById(
+        "statusBet"
+      );
+
+    const returnInput =
+      document.getElementById(
+        "retornoBet"
+      );
+
+    const returnGroup =
+      document.getElementById(
+        "retornoBetGroup"
+      );
+
+    if (
+      !statusSelect ||
+      !returnInput
+    ) {
+      console.warn(
+        "Campos do formulário de Bets não encontrados."
+      );
+
+      return;
+    }
+
+    const updateReturnField = () => {
+      const status =
+        statusSelect.value;
+
+      const shouldShow =
+        status === "Ganha" ||
+        status === "Cash Out";
+
+      if (returnGroup) {
+        returnGroup.hidden =
+          !shouldShow;
+      }
+
+      returnInput.required =
+        shouldShow;
+
+      if (!shouldShow) {
+        returnInput.value = "";
+      }
+    };
+
+    statusSelect.addEventListener(
+      "change",
+      updateReturnField
+    );
+
+    updateReturnField();
+
+    form.addEventListener(
       "submit",
       event => {
         event.preventDefault();
 
         try {
+          const date =
+            document.getElementById(
+              "dataBet"
+            ).value;
+
+          const description =
+            document.getElementById(
+              "eventoBet"
+            ).value.trim();
+
           const investment =
             Number(
               document.getElementById(
                 "valorBet"
               ).value
-            ) || 0;
+            );
 
-          const returnValue =
-            Number(
-              document.getElementById(
-                "retornoBet"
-              ).value
-            ) || 0;
+          const status =
+            statusSelect.value;
 
-          const eventName =
-            document.getElementById(
-              "eventoBet"
-            ).value.trim();
+          if (
+            !Number.isFinite(
+              investment
+            ) ||
+            investment <= 0
+          ) {
+            throw new Error(
+              "Informe um valor apostado válido."
+            );
+          }
 
-          const market =
-            document.getElementById(
-              "mercadoBet"
-            ).value.trim();
+          let returnValue = 0;
 
-          const bookmaker =
-            document.getElementById(
-              "casaBet"
-            ).value.trim();
+          if (
+            status === "Ganha" ||
+            status === "Cash Out"
+          ) {
+            returnValue =
+              Number(
+                returnInput.value
+              );
+
+            if (
+              !Number.isFinite(
+                returnValue
+              ) ||
+              returnValue < 0
+            ) {
+              throw new Error(
+                "Informe um retorno válido."
+              );
+            }
+          }
+
+          if (
+            status === "Perdida"
+          ) {
+            returnValue = 0;
+          }
+
+          if (
+            status === "Anulada"
+          ) {
+            returnValue =
+              investment;
+          }
 
           Bets.createBet({
-            data:
-              document.getElementById(
-                "dataBet"
-              ).value,
-
+            data: date,
             categoria: "pessoal",
-
             investimento:
               investment,
-
             retorno:
               returnValue,
-
-            resultado:
-              returnValue -
-              investment,
-
             descricao:
-              `${eventName} - ${market}`,
-
+              description,
             observacao:
-              `${bookmaker} | Odd ${
-                document.getElementById(
-                  "oddBet"
-                ).value
-              } | ${
-                document.getElementById(
-                  "statusBet"
-                ).value
-              }`
+              status
           });
 
           form.reset();
+
           this.setDefaultDates();
+          updateReturnField();
 
           this.showMessage(
             "Aposta salva com sucesso."
@@ -880,7 +1029,7 @@ const UI = {
   },
 
   /**
-   * Atualiza os dados da página Poker.
+   * Atualiza a página Poker.
    */
   renderPokerPage() {
     try {
@@ -916,6 +1065,9 @@ const UI = {
     }
   },
 
+  /**
+   * Renderiza a lista de sessões de Poker.
+   */
   renderPokerList(sessions) {
     const container =
       document.getElementById(
@@ -942,45 +1094,50 @@ const UI = {
     }
 
     container.innerHTML =
-      list.map(session => `
-        <div class="list-item">
-          <div>
-            <strong>
-              ${this.escapeHTML(
-                session.descricao ||
-                "Sessão de Poker"
+      list
+        .map(session => `
+          <div class="list-item">
+            <div>
+              <strong>
+                ${this.escapeHTML(
+                  session.descricao ||
+                  "Sessão de Poker"
+                )}
+              </strong>
+
+              <small>
+                ${this.formatDate(
+                  session.data
+                )}
+
+                ${
+                  session.local
+                    ? ` • ${this.escapeHTML(
+                        session.local
+                      )}`
+                    : ""
+                }
+              </small>
+            </div>
+
+            <strong class="${
+              Number(
+                session.resultado
+              ) >= 0
+                ? "positive"
+                : "negative"
+            }">
+              ${this.formatCurrency(
+                session.resultado
               )}
             </strong>
-
-            <small>
-              ${this.formatDate(
-                session.data
-              )}
-              ${
-                session.local
-                  ? ` • ${this.escapeHTML(
-                      session.local
-                    )}`
-                  : ""
-              }
-            </small>
           </div>
-
-          <strong class="${
-            Number(session.resultado) >= 0
-              ? "positive"
-              : "negative"
-          }">
-            ${this.formatCurrency(
-              session.resultado
-            )}
-          </strong>
-        </div>
-      `).join("");
+        `)
+        .join("");
   },
 
   /**
-   * Atualiza os dados da página Bets.
+   * Atualiza a página Bets.
    */
   renderBetsPage() {
     try {
@@ -997,7 +1154,6 @@ const UI = {
 
       this.setCurrency(
         "totalApostado",
-        general.totalInvestido ??
         general.investimento ??
         0
       );
@@ -1018,6 +1174,9 @@ const UI = {
     }
   },
 
+  /**
+   * Renderiza a lista de apostas.
+   */
   renderBetsList(bets) {
     const container =
       document.getElementById(
@@ -1044,38 +1203,50 @@ const UI = {
     }
 
     container.innerHTML =
-      list.map(bet => `
-        <div class="list-item">
-          <div>
-            <strong>
-              ${this.escapeHTML(
-                bet.descricao ||
-                "Aposta"
+      list
+        .map(bet => `
+          <div class="list-item">
+            <div>
+              <strong>
+                ${this.escapeHTML(
+                  bet.descricao ||
+                  "Aposta"
+                )}
+              </strong>
+
+              <small>
+                ${this.formatDate(
+                  bet.data
+                )}
+
+                ${
+                  bet.observacao
+                    ? ` • ${this.escapeHTML(
+                        bet.observacao
+                      )}`
+                    : ""
+                }
+              </small>
+            </div>
+
+            <strong class="${
+              Number(
+                bet.resultado
+              ) >= 0
+                ? "positive"
+                : "negative"
+            }">
+              ${this.formatCurrency(
+                bet.resultado
               )}
             </strong>
-
-            <small>
-              ${this.formatDate(
-                bet.data
-              )}
-            </small>
           </div>
-
-          <strong class="${
-            Number(bet.resultado) >= 0
-              ? "positive"
-              : "negative"
-          }">
-            ${this.formatCurrency(
-              bet.resultado
-            )}
-          </strong>
-        </div>
-      `).join("");
+        `)
+        .join("");
   },
 
   /**
-   * Filtro de ano.
+   * Configura o filtro do Dashboard.
    */
   bindDashboardFilter() {
     document
@@ -1091,11 +1262,13 @@ const UI = {
   },
 
   /**
-   * Configurações e backup.
+   * Configura exportação e limpeza de dados.
    */
   bindSettings() {
     document
-      .getElementById("exportar")
+      .getElementById(
+        "exportar"
+      )
       ?.addEventListener(
         "click",
         () => {
@@ -1104,7 +1277,8 @@ const UI = {
               Storage.exportDatabase();
 
             const content =
-              typeof database === "string"
+              typeof database ===
+              "string"
                 ? database
                 : JSON.stringify(
                     database,
@@ -1122,19 +1296,30 @@ const UI = {
               );
 
             const url =
-              URL.createObjectURL(blob);
+              URL.createObjectURL(
+                blob
+              );
 
             const link =
-              document.createElement("a");
+              document.createElement(
+                "a"
+              );
 
             link.href = url;
 
             link.download =
               `controle-financeiro-${this.getToday()}.json`;
 
-            link.click();
+            document.body.appendChild(
+              link
+            );
 
-            URL.revokeObjectURL(url);
+            link.click();
+            link.remove();
+
+            URL.revokeObjectURL(
+              url
+            );
 
             this.showMessage(
               "Backup exportado."
@@ -1151,7 +1336,9 @@ const UI = {
       );
 
     document
-      .getElementById("limpar")
+      .getElementById(
+        "limpar"
+      )
       ?.addEventListener(
         "click",
         () => {
@@ -1169,7 +1356,10 @@ const UI = {
             Storage.initialize();
 
             this.refreshAll();
-            this.navigate("dashboard");
+
+            this.navigate(
+              "dashboard"
+            );
 
             this.showMessage(
               "Dados apagados."
@@ -1186,12 +1376,14 @@ const UI = {
       );
 
     document
-      .getElementById("importar")
+      .getElementById(
+        "importar"
+      )
       ?.addEventListener(
         "click",
         () => {
           this.showMessage(
-            "A importação será adicionada na próxima etapa.",
+            "A importação será adicionada posteriormente.",
             "info"
           );
         }
@@ -1199,7 +1391,7 @@ const UI = {
   },
 
   /**
-   * Mensagem simples na tela.
+   * Exibe uma mensagem temporária.
    */
   showMessage(
     message,
@@ -1212,7 +1404,9 @@ const UI = {
 
     if (!container) {
       container =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       container.id =
         "ui-message-container";
@@ -1235,7 +1429,9 @@ const UI = {
     }
 
     const messageElement =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
     messageElement.className =
       `ui-message ui-message-${type}`;
@@ -1297,7 +1493,7 @@ const UI = {
   },
 
   /**
-   * Atualiza todos os resumos.
+   * Atualiza os principais dados.
    */
   refreshAll() {
     this.renderDashboard();
@@ -1320,11 +1516,14 @@ const UI = {
     this.bindSettings();
     this.setDefaultDates();
 
-    this.navigate("dashboard");
+    this.navigate(
+      "dashboard"
+    );
 
     return {
       success: true,
-      currentPage: this.currentPage
+      currentPage:
+        this.currentPage
     };
   }
 };

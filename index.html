@@ -1188,159 +1188,99 @@
           </div>
 
         </div>
+<form id="formBet">
 
-        <form id="formBet">
+  <div class="form-group">
+    <label for="dataBet">
+      Data
+    </label>
 
-          <div class="form-group">
+    <input
+      type="date"
+      id="dataBet"
+      required
+    >
+  </div>
 
-            <label for="dataBet">
-              Data
-            </label>
+  <div class="form-group">
+    <label for="eventoBet">
+      Evento ou descrição
+    </label>
 
-            <input
-              type="date"
-              id="dataBet"
-              required
-            >
+    <input
+      type="text"
+      id="eventoBet"
+      placeholder="Ex.: Cruzeiro x Atlético"
+      maxlength="150"
+      required
+    >
+  </div>
 
-          </div>
+  <div class="form-group">
+    <label for="valorBet">
+      Valor apostado
+    </label>
 
-          <div class="form-group">
+    <input
+      type="number"
+      id="valorBet"
+      placeholder="R$ 0,00"
+      step="0.01"
+      min="0.01"
+      required
+    >
+  </div>
 
-            <label for="casaBet">
-              Casa de aposta
-            </label>
+  <div class="form-group">
+    <label for="statusBet">
+      Resultado
+    </label>
 
-            <input
-              type="text"
-              id="casaBet"
-              placeholder="Ex.: Bet365"
-              required
-            >
+    <select
+      id="statusBet"
+      required
+    >
+      <option value="Ganha">
+        Ganha
+      </option>
 
-          </div>
+      <option value="Perdida">
+        Perdida
+      </option>
 
-          <div class="form-group">
+      <option value="Anulada">
+        Anulada
+      </option>
 
-            <label for="eventoBet">
-              Evento
-            </label>
+      <option value="Cash Out">
+        Cash out
+      </option>
+    </select>
+  </div>
 
-            <input
-              type="text"
-              id="eventoBet"
-              placeholder="Ex.: Cruzeiro x Atlético"
-              required
-            >
+  <div
+    class="form-group full"
+    id="retornoBetGroup"
+  >
+    <label for="retornoBet">
+      Retorno recebido
+    </label>
 
-          </div>
+    <input
+      type="number"
+      id="retornoBet"
+      placeholder="R$ 0,00"
+      step="0.01"
+      min="0"
+    >
+  </div>
 
-          <div class="form-group">
+  <button type="submit">
+    Salvar aposta
+  </button>
 
-            <label for="mercadoBet">
-              Mercado
-            </label>
-
-            <input
-              type="text"
-              id="mercadoBet"
-              placeholder="Ex.: Cruzeiro vence"
-              required
-            >
-
-          </div>
-
-          <div class="form-group">
-
-            <label for="oddBet">
-              Odd
-            </label>
-
-            <input
-              type="number"
-              step="0.01"
-              min="1"
-              id="oddBet"
-              placeholder="1.80"
-              required
-            >
-
-          </div>
-
-          <div class="form-group">
-
-            <label for="valorBet">
-              Valor apostado
-            </label>
-
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              id="valorBet"
-              placeholder="R$ 0,00"
-              required
-            >
-
-          </div>
-
-          <div class="form-group">
-
-            <label for="statusBet">
-              Status
-            </label>
-
-            <select
-              id="statusBet"
-              required
-            >
-
-              <option value="Pendente">
-                Pendente
-              </option>
-
-              <option value="Ganha">
-                Ganha
-              </option>
-
-              <option value="Perdida">
-                Perdida
-              </option>
-
-              <option value="Anulada">
-                Anulada
-              </option>
-
-              <option value="Cash Out">
-                Cash out
-              </option>
-
-            </select>
-
-          </div>
-
-          <div class="form-group">
-
-            <label for="retornoBet">
-              Retorno recebido
-            </label>
-
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              id="retornoBet"
-              value="0"
-            >
-
-          </div>
-
-          <button type="submit">
-            Salvar aposta
-          </button>
-
-        </form>
-
+</form>
+        
         <div id="listaBets"></div>
 
       </section>
