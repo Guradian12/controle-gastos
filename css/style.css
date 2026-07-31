@@ -751,3 +751,25 @@ form > button:hover {
     gap: 8px;
   }
 }
+.btn-delete-poker {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btn-delete-poker:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-delete-poker:active {
+  transform: translateY(0);
+}

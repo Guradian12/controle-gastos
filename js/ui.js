@@ -1066,60 +1066,61 @@ const UI = {
   },
 
   /**
-   * Renderiza a lista de sessões de Poker.
-   */
-  renderPokerList(sessions) {
-    const container =
-      document.getElementById(
-        "listaPoker"
-      );
+ * Renderiza a lista de sessões de Poker.
+ */
+renderPokerList(sessions) {
+  const container =
+    document.getElementById(
+      "listaPoker"
+    );
 
-    if (!container) {
-      return;
-    }
+  if (!container) {
+    return;
+  }
 
-    const list =
-      Array.isArray(sessions)
-        ? sessions
-        : [];
+  const list =
+    Array.isArray(sessions)
+      ? sessions
+      : [];
 
-    if (!list.length) {
-      container.innerHTML = `
-        <p class="empty-message">
-          Nenhuma sessão registrada.
-        </p>
-      `;
+  if (!list.length) {
+    container.innerHTML = `
+      <p class="empty-message">
+        Nenhuma sessão registrada.
+      </p>
+    `;
 
-      return;
-    }
+    return;
+  }
 
-    container.innerHTML =
-      list
-        .map(session => `
-          <div class="list-item">
-            <div>
-              <strong>
-                ${this.escapeHTML(
-                  session.descricao ||
-                  "Sessão de Poker"
-                )}
-              </strong>
+  container.innerHTML =
+    list
+      .map(session => `
+        <div class="list-item">
+          <div class="list-item-content">
+            <strong>
+              ${this.escapeHTML(
+                session.descricao ||
+                "Sessão de Poker"
+              )}
+            </strong>
 
-              <small>
-                ${this.formatDate(
-                  session.data
-                )}
+            <small>
+              ${this.formatDate(
+                session.data
+              )}
 
-                ${
-                  session.local
-                    ? ` • ${this.escapeHTML(
-                        session.local
-                      )}`
-                    : ""
-                }
-              </small>
-            </div>
+              ${
+                session.local
+                  ? ` • ${this.escapeHTML(
+                      session.local
+                    )}`
+                  : ""
+              }
+            </small>
+          </div>
 
+          <div class="list-item-actions">
             <strong class="${
               Number(
                 session.resultado
@@ -1131,10 +1132,72 @@ const UI = {
                 session.resultado
               )}
             </strong>
+
+            <button
+              type="button"
+              class="btn-delete-poker"
+              data-session-id="${this.escapeHTML(
+                session.id
+              )}"
+            >
+              Excluir
+            </button>
           </div>
-        `)
-        .join("");
-  },
+        </div>
+      `)
+      .join("");
+
+  container
+    .querySelectorAll(
+      ".btn-delete-poker"
+    )
+    .forEach(button => {
+      button.addEventListener(
+        "click",
+        () => {
+          const sessionId =
+            button.dataset.sessionId;
+
+          const confirmed =
+            window.confirm(
+              "Deseja realmente excluir esta sessão de Poker?"
+            );
+
+          if (!confirmed) {
+            return;
+          }
+
+          try {
+            const result =
+              Poker.deleteSession(
+                sessionId
+              );
+
+            if (!result.success) {
+              throw new Error(
+                result.error ||
+                "Sessão de Poker não encontrada."
+              );
+            }
+
+            this.showMessage(
+              "Sessão de Poker excluída com sucesso."
+            );
+
+            this.refreshAll();
+          } catch (error) {
+            console.error(error);
+
+            this.showMessage(
+              error.message ||
+              "Não foi possível excluir a sessão.",
+              "error"
+            );
+          }
+        }
+      );
+    });
+},
 
   /**
    * Atualiza a página Bets.
