@@ -1175,60 +1175,61 @@ const UI = {
   },
 
   /**
-   * Renderiza a lista de apostas.
-   */
-  renderBetsList(bets) {
-    const container =
-      document.getElementById(
-        "listaBets"
-      );
+ * Renderiza a lista de apostas.
+ */
+renderBetsList(bets) {
+  const container =
+    document.getElementById(
+      "listaBets"
+    );
 
-    if (!container) {
-      return;
-    }
+  if (!container) {
+    return;
+  }
 
-    const list =
-      Array.isArray(bets)
-        ? bets
-        : [];
+  const list =
+    Array.isArray(bets)
+      ? bets
+      : [];
 
-    if (!list.length) {
-      container.innerHTML = `
-        <p class="empty-message">
-          Nenhuma aposta registrada.
-        </p>
-      `;
+  if (!list.length) {
+    container.innerHTML = `
+      <p class="empty-message">
+        Nenhuma aposta registrada.
+      </p>
+    `;
 
-      return;
-    }
+    return;
+  }
 
-    container.innerHTML =
-      list
-        .map(bet => `
-          <div class="list-item">
-            <div>
-              <strong>
-                ${this.escapeHTML(
-                  bet.descricao ||
-                  "Aposta"
-                )}
-              </strong>
+  container.innerHTML =
+    list
+      .map(bet => `
+        <div class="list-item">
+          <div class="list-item-content">
+            <strong>
+              ${this.escapeHTML(
+                bet.descricao ||
+                "Aposta"
+              )}
+            </strong>
 
-              <small>
-                ${this.formatDate(
-                  bet.data
-                )}
+            <small>
+              ${this.formatDate(
+                bet.data
+              )}
 
-                ${
-                  bet.observacao
-                    ? ` • ${this.escapeHTML(
-                        bet.observacao
-                      )}`
-                    : ""
-                }
-              </small>
-            </div>
+              ${
+                bet.observacao
+                  ? ` • ${this.escapeHTML(
+                      bet.observacao
+                    )}`
+                  : ""
+              }
+            </small>
+          </div>
 
+          <div class="list-item-actions">
             <strong class="${
               Number(
                 bet.resultado
@@ -1240,10 +1241,72 @@ const UI = {
                 bet.resultado
               )}
             </strong>
+
+            <button
+              type="button"
+              class="btn-delete-bet"
+              data-bet-id="${this.escapeHTML(
+                bet.id
+              )}"
+            >
+              Excluir
+            </button>
           </div>
-        `)
-        .join("");
-  },
+        </div>
+      `)
+      .join("");
+
+  container
+    .querySelectorAll(
+      ".btn-delete-bet"
+    )
+    .forEach(button => {
+      button.addEventListener(
+        "click",
+        () => {
+          const betId =
+            button.dataset.betId;
+
+          const confirmed =
+            window.confirm(
+              "Deseja realmente excluir esta aposta?"
+            );
+
+          if (!confirmed) {
+            return;
+          }
+
+          try {
+            const result =
+              Bets.deleteBet(
+                betId
+              );
+
+            if (!result.success) {
+              throw new Error(
+                result.error ||
+                "Aposta não encontrada."
+              );
+            }
+
+            this.showMessage(
+              "Aposta excluída com sucesso."
+            );
+
+            this.refreshAll();
+          } catch (error) {
+            console.error(error);
+
+            this.showMessage(
+              error.message ||
+              "Não foi possível excluir a aposta.",
+              "error"
+            );
+          }
+        }
+      );
+    });
+},
 
   /**
    * Configura o filtro do Dashboard.
