@@ -703,3 +703,51 @@ form > button:hover {
     grid-template-columns: 1fr;
   }
 }
+.list-item-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.list-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.btn-delete-bet {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btn-delete-bet:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-delete-bet:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  .list-item {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .list-item-actions {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+}
