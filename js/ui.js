@@ -761,6 +761,214 @@ const UI = {
     );
   },
 
+/**
+ * Formulário de Limites.
+ */
+bindLimitsForm() {
+  const form =
+    document.getElementById(
+      "formLimites"
+    );
+
+  if (!form) {
+    return;
+  }
+
+  form.addEventListener(
+    "submit",
+    event => {
+      event.preventDefault();
+
+      try {
+        const getValue = id => {
+          const input =
+            document.getElementById(id);
+
+          const value =
+            Number(input?.value || 0);
+
+          if (
+            !Number.isFinite(value) ||
+            value < 0
+          ) {
+            throw new Error(
+              "Os limites devem ser números maiores ou iguais a zero."
+            );
+          }
+
+          return value;
+        };
+
+        const limits =
+          Storage.getLimites() || {};
+
+        const goals =
+          Storage.getMetas() || {};
+
+        limits.mensalGeral =
+          getValue("limiteMensal");
+
+        limits.poker =
+          getValue("limitePoker");
+
+        limits.bets =
+          getValue("limiteBets");
+
+        goals.economiaMensal =
+          getValue("metaEconomia");
+
+        Storage.updateSection(
+          "limites",
+          limits
+        );
+
+        Storage.updateSection(
+          "metas",
+          goals
+        );
+
+        Categories.setCategoryLimit(
+          "alimentacao",
+          getValue(
+            "limiteAlimentacao"
+          )
+        );
+
+        Categories.setCategoryLimit(
+          "transporte",
+          getValue(
+            "limiteTransporte"
+          )
+        );
+
+        Categories.setCategoryLimit(
+          "lazer",
+          getValue(
+            "limiteLazer"
+          )
+        );
+
+        this.showMessage(
+          "Limites salvos com sucesso."
+        );
+
+        this.renderLimitsPage();
+      } catch (error) {
+        console.error(error);
+
+        this.showMessage(
+          error.message ||
+          "Não foi possível salvar os limites.",
+          "error"
+        );
+      }
+    }
+  );
+},
+
+/**
+ * Atualiza os campos da página de Limites.
+ */
+renderLimitsPage() {
+  try {
+    const limits =
+      Storage.getLimites() || {};
+
+    const goals =
+      Storage.getMetas() || {};
+
+    const setInputValue = (
+      id,
+      value
+    ) => {
+      const input =
+        document.getElementById(id);
+
+      if (input) {
+        input.value =
+          Number(value) || 0;
+      }
+    };
+
+    setInputValue(
+      "limiteMensal",
+      limits.mensalGeral
+    );
+
+    setInputValue(
+      "metaEconomia",
+      goals.economiaMensal
+    );
+
+    setInputValue(
+      "limiteAlimentacao",
+      Categories.getCategoryLimit(
+        "alimentacao"
+      )
+    );
+
+    setInputValue(
+      "limiteTransporte",
+      Categories.getCategoryLimit(
+        "transporte"
+      )
+    );
+
+    setInputValue(
+      "limiteLazer",
+      Categories.getCategoryLimit(
+        "lazer"
+      )
+    );
+
+    setInputValue(
+      "limitePoker",
+      limits.poker
+    );
+
+    setInputValue(
+      "limiteBets",
+      limits.bets
+    );
+
+    this.setCurrency(
+      "totalLimiteAlimentacao",
+      Categories.getCategoryLimit(
+        "alimentacao"
+      )
+    );
+
+    this.setCurrency(
+      "totalLimiteTransporte",
+      Categories.getCategoryLimit(
+        "transporte"
+      )
+    );
+
+    this.setCurrency(
+      "totalLimiteLazer",
+      Categories.getCategoryLimit(
+        "lazer"
+      )
+    );
+
+    this.setCurrency(
+      "totalLimitePoker",
+      limits.poker
+    );
+
+    this.setCurrency(
+      "totalLimiteBets",
+      limits.bets
+    );
+  } catch (error) {
+    console.error(
+      "Erro ao atualizar Limites:",
+      error
+    );
+  }
+},
+
   /**
    * Formulário de Poker.
    */
@@ -1605,6 +1813,10 @@ renderBetsList(bets) {
         this.renderDashboard();
         break;
 
+      case "limites":
+        this.renderLimitsPage();
+        break;
+      
       case "poker":
         this.renderPokerPage();
         break;
@@ -1623,6 +1835,7 @@ renderBetsList(bets) {
    */
   refreshAll() {
     this.renderDashboard();
+    this.renderLimitsPage();
     this.renderPokerPage();
     this.renderBetsPage();
   },
@@ -1636,6 +1849,7 @@ renderBetsList(bets) {
 
     this.bindIncomeForm();
     this.bindExpenseForm();
+    this.bindLimitsForm();
     this.bindPokerForm();
     this.bindBetForm();
 
