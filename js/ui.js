@@ -2295,20 +2295,117 @@ renderBetsList(bets) {
         }
       );
 
-    document
-      .getElementById(
-        "importar"
-      )
-      ?.addEventListener(
-        "click",
-        () => {
-          this.showMessage(
-            "A importação será adicionada posteriormente.",
-            "info"
-          );
-        }
+   const importButton =
+  document.getElementById(
+    "importar"
+  );
+
+const importInput =
+  document.getElementById(
+    "arquivoImportacao"
+  );
+
+importButton?.addEventListener(
+  "click",
+  () => {
+    importInput?.click();
+  }
+);
+
+importInput?.addEventListener(
+  "change",
+  event => {
+    const file =
+      event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    const confirmed =
+      window.confirm(
+        "A importação substituirá todos os dados atuais. Deseja continuar?"
       );
-  },
+
+    if (!confirmed) {
+      event.target.value = "";
+      return;
+    }
+
+    const reader =
+      new FileReader();
+
+    reader.addEventListener(
+      "load",
+      () => {
+        try {
+          const content =
+            String(
+              reader.result || ""
+            );
+
+          const result =
+            Storage.importDatabase(
+              content
+            );
+
+          if (!result.success) {
+            throw new Error(
+              result.error ||
+              "O backup não pôde ser importado."
+            );
+          }
+
+          Categories.initialize();
+          Expenses.initialize();
+          Poker.initialize();
+          Bets.initialize();
+
+          this.populateCategories();
+          this.setDefaultDates();
+          this.refreshAll();
+
+          this.navigate(
+            "dashboard"
+          );
+
+          this.showMessage(
+            "Backup importado com sucesso."
+          );
+        } catch (error) {
+          console.error(
+            "Erro ao importar backup:",
+            error
+          );
+
+          this.showMessage(
+            error.message ||
+            "Não foi possível importar o backup.",
+            "error"
+          );
+        } finally {
+          importInput.value = "";
+        }
+      }
+    );
+
+    reader.addEventListener(
+      "error",
+      () => {
+        this.showMessage(
+          "Não foi possível ler o arquivo selecionado.",
+          "error"
+        );
+
+        importInput.value = "";
+      }
+    );
+
+    reader.readAsText(
+      file
+    );
+  }
+);
 
   /**
    * Exibe uma mensagem temporária.
