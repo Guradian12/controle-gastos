@@ -722,6 +722,8 @@ populateCategories() {
           );
 
           this.refreshAll();
+          this.renderIncomesPage();
+        
         } catch (error) {
           console.error(error);
 
@@ -734,6 +736,157 @@ populateCategories() {
       }
     );
   },
+
+ /**
+ * Atualiza a página de Receitas.
+ */
+renderIncomesPage() {
+  try {
+    const incomes =
+      Expenses.getIncomes();
+
+    this.renderIncomesList(
+      incomes
+    );
+  } catch (error) {
+    console.error(
+      "Erro ao atualizar a página de Receitas:",
+      error
+    );
+
+    this.showMessage(
+      "Não foi possível carregar as receitas.",
+      "error"
+    );
+  }
+},
+
+/**
+ * Renderiza a lista de receitas.
+ */
+renderIncomesList(incomes) {
+  const container =
+    document.getElementById(
+      "listaReceitas"
+    );
+
+  if (!container) {
+    return;
+  }
+
+  const list =
+    Array.isArray(incomes)
+      ? incomes
+      : [];
+
+  if (!list.length) {
+    container.innerHTML = `
+      <p class="empty-message">
+        Nenhuma receita registrada.
+      </p>
+    `;
+
+    return;
+  }
+
+  container.innerHTML =
+    list
+      .map(income => `
+        <div class="list-item">
+          <div class="list-item-content">
+            <strong>
+              ${this.escapeHTML(
+                income.descricao ||
+                "Receita"
+              )}
+            </strong>
+
+            <small>
+              ${this.escapeHTML(
+                income.categoriaNome ||
+                "Sem categoria"
+              )}
+              •
+              ${this.formatDate(
+                income.data
+              )}
+            </small>
+          </div>
+
+          <div class="list-item-actions">
+            <strong class="positive">
+              +${this.formatCurrency(
+                income.valor
+              )}
+            </strong>
+
+            <button
+              type="button"
+              class="btn-delete-income"
+              data-income-id="${this.escapeHTML(
+                income.id
+              )}"
+            >
+              Excluir
+            </button>
+          </div>
+        </div>
+      `)
+      .join("");
+
+  container
+    .querySelectorAll(
+      ".btn-delete-income"
+    )
+    .forEach(button => {
+      button.addEventListener(
+        "click",
+        () => {
+          const incomeId =
+            button.dataset.incomeId;
+
+          const confirmed =
+            window.confirm(
+              "Deseja realmente excluir esta receita?"
+            );
+
+          if (!confirmed) {
+            return;
+          }
+
+          try {
+            const result =
+              Expenses.delete(
+                incomeId,
+                "receita"
+              );
+
+            if (!result.success) {
+              throw new Error(
+                result.error ||
+                "Receita não encontrada."
+              );
+            }
+
+            this.showMessage(
+              "Receita excluída com sucesso."
+            );
+
+            this.refreshAll();
+            this.renderIncomesPage();
+          } catch (error) {
+            console.error(error);
+
+            this.showMessage(
+              error.message ||
+              "Não foi possível excluir a receita.",
+              "error"
+            );
+          }
+        }
+      );
+    });
+},
 
   /**
    * Formulário de gastos.
@@ -2246,6 +2399,11 @@ renderBetsList(bets) {
         this.renderDashboard();
         break;
 
+
+      case "receitas":
+        this.renderIncomesPage();
+        break;
+
       case "gastos":
         this.renderExpensesPage();
         break;
@@ -2272,6 +2430,7 @@ renderBetsList(bets) {
    */
   refreshAll() {
     this.renderDashboard();
+    this.renderIncomesPage();
     this.renderExpensesPage();
     this.renderLimitsPage();
     this.renderPokerPage();
