@@ -144,6 +144,55 @@ const UI = {
     });
   },
 
+/**
+ * Carrega as categorias nos formulários.
+ */
+populateCategories() {
+  const incomeSelect =
+    document.getElementById(
+      "categoriaReceita"
+    );
+
+  const expenseSelect =
+    document.getElementById(
+      "categoriaGasto"
+    );
+
+  const createOptions = categories => {
+    return [
+      `
+        <option value="">
+          Selecione uma categoria
+        </option>
+      `,
+
+      ...categories.map(category => `
+        <option value="${this.escapeHTML(
+          category.id
+        )}">
+          ${this.escapeHTML(
+            category.nome
+          )}
+        </option>
+      `)
+    ].join("");
+  };
+
+  if (incomeSelect) {
+    incomeSelect.innerHTML =
+      createOptions(
+        Categories.getReceitas()
+      );
+  }
+
+  if (expenseSelect) {
+    expenseSelect.innerHTML =
+      createOptions(
+        Categories.getGastos()
+      );
+  }
+},
+
   /**
    * Troca a página exibida.
    */
@@ -636,7 +685,7 @@ const UI = {
                 ).value
               ),
 
-            categoria:
+            categoriaId:
               document.getElementById(
                 "categoriaReceita"
               ).value,
@@ -713,7 +762,7 @@ const UI = {
                 ).value
               ),
 
-            categoria:
+            categoriaId:
               document.getElementById(
                 "categoriaGasto"
               ).value,
@@ -1846,6 +1895,8 @@ renderBetsList(bets) {
   initialize() {
     this.bindNavigation();
     this.bindDashboardFilter();
+
+    this.populateCategories();
 
     this.bindIncomeForm();
     this.bindExpenseForm();
