@@ -800,6 +800,8 @@ populateCategories() {
         } catch (error) {
           console.error(error);
 
+          this.renderExpensesPage();
+
           this.showMessage(
             error.message ||
             "Não foi possível salvar o gasto.",
@@ -813,6 +815,158 @@ populateCategories() {
 /**
  * Formulário de Limites.
  */
+
+/**
+ * Atualiza a página de Gastos.
+ */
+renderExpensesPage() {
+  try {
+    const expenses =
+      Expenses.getExpenses();
+
+    this.renderExpensesList(
+      expenses
+    );
+  } catch (error) {
+    console.error(
+      "Erro ao atualizar a página de Gastos:",
+      error
+    );
+
+    this.showMessage(
+      "Não foi possível carregar os gastos.",
+      "error"
+    );
+  }
+},
+
+/**
+ * Renderiza a lista de gastos.
+ */
+renderExpensesList(expenses) {
+  const container =
+    document.getElementById(
+      "listaGastos"
+    );
+
+  if (!container) {
+    return;
+  }
+
+  const list =
+    Array.isArray(expenses)
+      ? expenses
+      : [];
+
+  if (!list.length) {
+    container.innerHTML = `
+      <p class="empty-message">
+        Nenhum gasto registrado.
+      </p>
+    `;
+
+    return;
+  }
+
+  container.innerHTML =
+    list
+      .map(expense => `
+        <div class="list-item">
+          <div class="list-item-content">
+            <strong>
+              ${this.escapeHTML(
+                expense.descricao ||
+                "Gasto"
+              )}
+            </strong>
+
+            <small>
+              ${this.escapeHTML(
+                expense.categoriaNome ||
+                "Sem categoria"
+              )}
+              •
+              ${this.formatDate(
+                expense.data
+              )}
+            </small>
+          </div>
+
+          <div class="list-item-actions">
+            <strong class="negative">
+              -${this.formatCurrency(
+                expense.valor
+              )}
+            </strong>
+
+            <button
+              type="button"
+              class="btn-delete-expense"
+              data-expense-id="${this.escapeHTML(
+                expense.id
+              )}"
+            >
+              Excluir
+            </button>
+          </div>
+        </div>
+      `)
+      .join("");
+
+  container
+    .querySelectorAll(
+      ".btn-delete-expense"
+    )
+    .forEach(button => {
+      button.addEventListener(
+        "click",
+        () => {
+          const expenseId =
+            button.dataset.expenseId;
+
+          const confirmed =
+            window.confirm(
+              "Deseja realmente excluir este gasto?"
+            );
+
+          if (!confirmed) {
+            return;
+          }
+
+          try {
+            const result =
+              Expenses.delete(
+                expenseId,
+                "gasto"
+              );
+
+            if (!result.success) {
+              throw new Error(
+                result.error ||
+                "Gasto não encontrado."
+              );
+            }
+
+            this.showMessage(
+              "Gasto excluído com sucesso."
+            );
+
+            this.refreshAll();
+            this.renderExpensesPage();
+          } catch (error) {
+            console.error(error);
+
+            this.showMessage(
+              error.message ||
+              "Não foi possível excluir o gasto.",
+              "error"
+            );
+          }
+        }
+      );
+    });
+},
+
 bindLimitsForm() {
   const form =
     document.getElementById(
@@ -2092,6 +2246,10 @@ renderBetsList(bets) {
         this.renderDashboard();
         break;
 
+      case "gastos":
+        this.renderExpensesPage();
+        break;
+
       case "limites":
         this.renderLimitsPage();
         break;
@@ -2114,6 +2272,7 @@ renderBetsList(bets) {
    */
   refreshAll() {
     this.renderDashboard();
+    this.renderExpensesPage();
     this.renderLimitsPage();
     this.renderPokerPage();
     this.renderBetsPage();

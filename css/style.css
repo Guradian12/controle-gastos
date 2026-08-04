@@ -826,3 +826,26 @@ form > button:hover {
   color: #64748b;
   font-weight: 700;
 }
+
+.btn-delete-expense {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btn-delete-expense:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-delete-expense:active {
+  transform: translateY(0);
+}
