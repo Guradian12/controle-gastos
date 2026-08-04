@@ -950,10 +950,11 @@ renderIncomesList(incomes) {
           );
 
           this.refreshAll();
+          this.renderExpensesPage();
         } catch (error) {
           console.error(error);
 
-          this.renderExpensesPage();
+          
 
           this.showMessage(
             error.message ||
@@ -2404,8 +2405,9 @@ importInput?.addEventListener(
     reader.readAsText(
       file
     );
-  }
+    }
 );
+},
 
   /**
    * Exibe uma mensagem temporária.
