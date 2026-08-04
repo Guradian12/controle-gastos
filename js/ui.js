@@ -916,7 +916,7 @@ bindLimitsForm() {
 },
 
 /**
- * Atualiza os campos da página de Limites.
+ * Atualiza os campos, valores e barras da página Limites.
  */
 renderLimitsPage() {
   try {
@@ -926,6 +926,18 @@ renderLimitsPage() {
     const goals =
       Storage.getMetas() || {};
 
+    const currentDate =
+      new Date();
+
+    const currentMonth =
+      currentDate.getMonth();
+
+    const currentYear =
+      currentDate.getFullYear();
+
+    /**
+     * Preenche um campo numérico.
+     */
     const setInputValue = (
       id,
       value
@@ -938,6 +950,118 @@ renderLimitsPage() {
           Number(value) || 0;
       }
     };
+
+    /**
+     * Atualiza um cartão visual de limite.
+     */
+    const updateLimitCard = ({
+      status,
+      spentId,
+      limitId,
+      percentageId,
+      barId
+    }) => {
+      const used =
+        Number(status?.utilizado) || 0;
+
+      const limit =
+        Number(status?.limite) || 0;
+
+      const percentage =
+        Number(status?.percentual) || 0;
+
+      const visualPercentage =
+        Math.min(
+          Math.max(percentage, 0),
+          100
+        );
+
+      this.setCurrency(
+        spentId,
+        used
+      );
+
+      this.setCurrency(
+        limitId,
+        limit
+      );
+
+      this.setText(
+        percentageId,
+        `${Math.round(percentage)}%`
+      );
+
+      const bar =
+        document.getElementById(
+          barId
+        );
+
+      const percentageElement =
+        document.getElementById(
+          percentageId
+        );
+
+      if (bar) {
+        bar.style.width =
+          `${visualPercentage}%`;
+
+        bar.classList.remove(
+          "limit-normal",
+          "limit-warning",
+          "limit-danger",
+          "limit-empty"
+        );
+
+        if (limit <= 0) {
+          bar.classList.add(
+            "limit-empty"
+          );
+        } else if (percentage > 100) {
+          bar.classList.add(
+            "limit-danger"
+          );
+        } else if (percentage >= 80) {
+          bar.classList.add(
+            "limit-warning"
+          );
+        } else {
+          bar.classList.add(
+            "limit-normal"
+          );
+        }
+      }
+
+      if (percentageElement) {
+        percentageElement.classList.remove(
+          "limit-text-normal",
+          "limit-text-warning",
+          "limit-text-danger",
+          "limit-text-empty"
+        );
+
+        if (limit <= 0) {
+          percentageElement.classList.add(
+            "limit-text-empty"
+          );
+        } else if (percentage > 100) {
+          percentageElement.classList.add(
+            "limit-text-danger"
+          );
+        } else if (percentage >= 80) {
+          percentageElement.classList.add(
+            "limit-text-warning"
+          );
+        } else {
+          percentageElement.classList.add(
+            "limit-text-normal"
+          );
+        }
+      }
+    };
+
+    /*
+     * Preenche o formulário com os valores salvos.
+     */
 
     setInputValue(
       "limiteMensal",
@@ -980,43 +1104,149 @@ renderLimitsPage() {
       limits.bets
     );
 
-    this.setCurrency(
-      "totalLimiteAlimentacao",
-      Categories.getCategoryLimit(
-        "alimentacao"
-      )
-    );
+    /*
+     * Calcula os limites das categorias pessoais.
+     */
 
-    this.setCurrency(
-      "totalLimiteTransporte",
-      Categories.getCategoryLimit(
-        "transporte"
-      )
-    );
+    const foodStatus =
+      Expenses.getCategoryLimitStatus(
+        "alimentacao",
+        currentMonth,
+        currentYear
+      );
 
-    this.setCurrency(
-      "totalLimiteLazer",
-      Categories.getCategoryLimit(
-        "lazer"
-      )
-    );
+    const transportStatus =
+      Expenses.getCategoryLimitStatus(
+        "transporte",
+        currentMonth,
+        currentYear
+      );
 
-    this.setCurrency(
-      "totalLimitePoker",
-      limits.poker
-    );
+    const leisureStatus =
+      Expenses.getCategoryLimitStatus(
+        "lazer",
+        currentMonth,
+        currentYear
+      );
 
-    this.setCurrency(
-      "totalLimiteBets",
-      limits.bets
-    );
+    /*
+     * Calcula o valor investido em Poker no mês.
+     */
+
+    const pokerSessions =
+      Poker.getSessionsByMonth(
+        currentMonth,
+        currentYear
+      );
+
+    const pokerUsed =
+      Poker.getTotalBuyIns(
+        pokerSessions
+      );
+
+    const pokerStatus =
+      Expenses.buildLimitStatus(
+        limits.poker,
+        pokerUsed
+      );
+
+    /*
+     * Calcula o valor apostado em Bets no mês.
+     */
+
+    const monthlyBets =
+      Bets.getBetsByMonth(
+        currentMonth,
+        currentYear
+      );
+
+    const betsUsed =
+      Bets.getTotalInvestment(
+        monthlyBets
+      );
+
+    const betsStatus =
+      Expenses.buildLimitStatus(
+        limits.bets,
+        betsUsed
+      );
+
+    /*
+     * Atualiza os cartões.
+     */
+
+    updateLimitCard({
+      status: foodStatus,
+      spentId:
+        "gastoAlimentacao",
+      limitId:
+        "totalLimiteAlimentacao",
+      percentageId:
+        "percentualAlimentacao",
+      barId:
+        "barraAlimentacao"
+    });
+
+    updateLimitCard({
+      status: transportStatus,
+      spentId:
+        "gastoTransporte",
+      limitId:
+        "totalLimiteTransporte",
+      percentageId:
+        "percentualTransporte",
+      barId:
+        "barraTransporte"
+    });
+
+    updateLimitCard({
+      status: leisureStatus,
+      spentId:
+        "gastoLazer",
+      limitId:
+        "totalLimiteLazer",
+      percentageId:
+        "percentualLazer",
+      barId:
+        "barraLazer"
+    });
+
+    updateLimitCard({
+      status: pokerStatus,
+      spentId:
+        "gastoPoker",
+      limitId:
+        "totalLimitePoker",
+      percentageId:
+        "percentualPoker",
+      barId:
+        "barraPoker"
+    });
+
+    updateLimitCard({
+      status: betsStatus,
+      spentId:
+        "gastoBets",
+      limitId:
+        "totalLimiteBets",
+      percentageId:
+        "percentualBets",
+      barId:
+        "barraBets"
+    });
   } catch (error) {
     console.error(
-      "Erro ao atualizar Limites:",
+      "Erro ao atualizar a página Limites:",
       error
+    );
+
+    this.showMessage(
+      "Não foi possível atualizar os limites.",
+      "error"
     );
   }
 },
+
 
   /**
    * Formulário de Poker.

@@ -773,3 +773,56 @@ form > button:hover {
 .btn-delete-poker:active {
   transform: translateY(0);
 }
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-value {
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  transition:
+    width 0.4s ease,
+    background-color 0.3s ease;
+}
+
+.limit-normal {
+  background-color: #22c55e;
+}
+
+.limit-warning {
+  background-color: #f59e0b;
+}
+
+.limit-danger {
+  background-color: #ef4444;
+}
+
+.limit-empty {
+  background-color: #cbd5e1;
+}
+
+.limit-text-normal {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.limit-text-warning {
+  color: #d97706;
+  font-weight: 700;
+}
+
+.limit-text-danger {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.limit-text-empty {
+  color: #64748b;
+  font-weight: 700;
+}
