@@ -898,12 +898,19 @@ form > button:hover {
   background: #f1f5f9;
 }
 
+
+/* =========================
+   PROJEÇÃO DO MÊS
+   ========================= */
+
 .projection-panel {
-  background: var(--card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 22px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 24px;
   margin-bottom: 24px;
+  box-shadow:
+    0 8px 24px rgba(15, 23, 42, 0.06);
 }
 
 .projection-header {
@@ -911,61 +918,95 @@ form > button:hover {
   align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
 }
 
 .projection-header h2 {
-  font-size: 20px;
-  margin-bottom: 4px;
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .projection-header p {
-  color: var(--text2);
+  margin: 6px 0 0;
+  color: #64748b;
   font-size: 13px;
 }
 
 .projection-status {
-  font-size: 14px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
   font-weight: 700;
+  white-space: nowrap;
 }
+
+.projection-danger-text {
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.projection-safe-text {
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+
+/* CARDS INTERNOS */
 
 .projection-grid {
   display: grid;
   grid-template-columns:
     repeat(4, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 14px;
+  margin-bottom: 22px;
 }
 
 .projection-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px 18px;
+
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 7px;
 }
 
 .projection-item span {
-  color: var(--text2);
-  font-size: 13px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .projection-item strong {
-  font-size: 19px;
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 750;
 }
+
+
+/* BARRA */
 
 .projection-progress {
   width: 100%;
-  height: 10px;
-  background: #e5e7eb;
+  height: 9px;
+  background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
+  margin-top: 3px;
 }
 
 .projection-progress-value {
   width: 0;
   height: 100%;
   border-radius: 999px;
+
   transition:
-    width 0.4s ease,
+    width 0.45s ease,
     background-color 0.3s ease;
 }
 
@@ -981,34 +1022,47 @@ form > button:hover {
   background: #ef4444;
 }
 
-.projection-safe-text {
-  color: #16a34a;
-}
 
-.projection-danger-text {
-  color: #dc2626;
-}
+/* MENSAGEM */
 
 .projection-message {
-  margin-top: 14px;
-  color: var(--text2);
-  font-size: 14px;
-  line-height: 1.5;
+  margin: 16px 0 0;
+  padding: 14px 16px;
+
+  background: #f8fafc;
+  border-left: 4px solid #cbd5e1;
+  border-radius: 10px;
+
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.6;
 }
 
-@media (max-width: 900px) {
+.projection-status.projection-danger-text
+  ~ .projection-message {
+  border-left-color: #ef4444;
+}
+
+
+/* RESPONSIVO */
+
+@media (max-width: 1000px) {
   .projection-grid {
     grid-template-columns:
       repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 550px) {
-  .projection-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 600px) {
+  .projection-panel {
+    padding: 18px;
   }
 
   .projection-header {
     flex-direction: column;
+  }
+
+  .projection-grid {
+    grid-template-columns: 1fr;
   }
 }
