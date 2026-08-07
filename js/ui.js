@@ -337,6 +337,12 @@ populateCategories() {
       this.renderRecentTransactions(
         data.atividadesRecentes
       );
+    
+      this.renderSpendingProjection(
+       month,
+       year
+     );
+    
     } catch (error) {
       console.error(
         "Erro ao atualizar o Dashboard:",
@@ -344,6 +350,296 @@ populateCategories() {
       );
     }
   },
+
+/**
+ * Calcula a projeção de gastos
+ * até o final do mês.
+ */
+renderSpendingProjection(
+  month,
+  year
+) {
+  try {
+    const expenses =
+      Expenses.getByMonth(
+        month,
+        year,
+        "gasto"
+      );
+
+    const effectiveExpenses =
+      expenses.filter(expense => {
+        if (
+          typeof Expenses.isEffective ===
+          "function"
+        ) {
+          return Expenses.isEffective(
+            expense
+          );
+        }
+
+        return true;
+      });
+
+    const totalSpent =
+      Expenses.getExpenseTotal(
+        effectiveExpenses
+      );
+
+    const limits =
+      Storage.getLimites() || {};
+
+    const monthlyLimit =
+      Number(
+        limits.mensalGeral
+      ) || 0;
+
+    this.setCurrency(
+      "projectionLimit",
+      monthlyLimit
+    );
+
+    if (!effectiveExpenses.length) {
+      this.setCurrency(
+        "projectionTotal",
+        0
+      );
+
+      this.setCurrency(
+        "projectionDailyAverage",
+        0
+      );
+
+      this.setCurrency(
+        "projectionDailyAllowed",
+        0
+      );
+
+      this.setText(
+        "projectionStatus",
+        "Sem dados"
+      );
+
+      this.setText(
+        "projectionMessage",
+        "Cadastre seus gastos para gerar uma projeção."
+      );
+
+      return;
+    }
+
+    const today =
+      new Date();
+
+    const daysInMonth =
+      new Date(
+        year,
+        month + 1,
+        0
+      ).getDate();
+
+    const expenseDays =
+      effectiveExpenses
+        .map(expense => {
+          const parts =
+            String(
+              expense.data
+            ).split("-");
+
+          return Number(
+            parts[2]
+          );
+        })
+        .filter(day =>
+          Number.isFinite(day)
+        );
+
+    const firstExpenseDay =
+      Math.min(
+        ...expenseDays
+      );
+
+    const currentDay =
+      today.getDate();
+
+    const observedDays =
+      Math.max(
+        1,
+        currentDay -
+        firstExpenseDay +
+        1
+      );
+
+    const dailyAverage =
+      totalSpent /
+      observedDays;
+
+    const projectionDays =
+      daysInMonth -
+      firstExpenseDay +
+      1;
+
+    const projectedTotal =
+      dailyAverage *
+      projectionDays;
+
+    const remainingBudget =
+      monthlyLimit -
+      totalSpent;
+
+    const remainingDays =
+      Math.max(
+        0,
+        daysInMonth -
+        currentDay
+      );
+
+    const dailyAllowed =
+      remainingDays > 0
+        ? Math.max(
+            remainingBudget,
+            0
+          ) / remainingDays
+        : 0;
+
+    const projectedPercentage =
+      monthlyLimit > 0
+        ? (
+            projectedTotal /
+            monthlyLimit
+          ) * 100
+        : 0;
+
+    this.setCurrency(
+      "projectionTotal",
+      projectedTotal
+    );
+
+    this.setCurrency(
+      "projectionDailyAverage",
+      dailyAverage
+    );
+
+    this.setCurrency(
+      "projectionDailyAllowed",
+      dailyAllowed
+    );
+
+    const progressBar =
+      document.getElementById(
+        "projectionProgressBar"
+      );
+
+    if (progressBar) {
+      progressBar.style.width =
+        `${Math.min(
+          projectedPercentage,
+          100
+        )}%`;
+
+      progressBar.classList.remove(
+        "projection-safe",
+        "projection-warning",
+        "projection-danger"
+      );
+
+      if (
+        projectedPercentage >
+        100
+      ) {
+        progressBar.classList.add(
+          "projection-danger"
+        );
+      } else if (
+        projectedPercentage >= 85
+      ) {
+        progressBar.classList.add(
+          "projection-warning"
+        );
+      } else {
+        progressBar.classList.add(
+          "projection-safe"
+        );
+      }
+    }
+
+    const status =
+      document.getElementById(
+        "projectionStatus"
+      );
+
+    if (monthlyLimit <= 0) {
+      this.setText(
+        "projectionStatus",
+        "Sem limite definido"
+      );
+
+      this.setText(
+        "projectionMessage",
+        "Defina um limite mensal para comparar sua projeção."
+      );
+
+      return;
+    }
+
+    if (
+      projectedTotal >
+      monthlyLimit
+    ) {
+      const excess =
+        projectedTotal -
+        monthlyLimit;
+
+      this.setText(
+        "projectionStatus",
+        "Acima do ritmo"
+      );
+
+      this.setText(
+        "projectionMessage",
+        `No ritmo atual, você poderá ultrapassar o limite em ${this.formatCurrency(
+          excess
+        )}. Para cumprir o orçamento, tente manter os próximos gastos em até ${this.formatCurrency(
+          dailyAllowed
+        )} por dia.`
+      );
+
+      if (status) {
+        status.className =
+          "projection-status projection-danger-text";
+      }
+
+      return;
+    }
+
+    const projectedRemaining =
+      monthlyLimit -
+      projectedTotal;
+
+    this.setText(
+      "projectionStatus",
+      "Dentro do limite"
+    );
+
+    this.setText(
+      "projectionMessage",
+      `Mantendo esse ritmo, você deve terminar o mês ${this.formatCurrency(
+        projectedRemaining
+      )} abaixo do limite.`
+    );
+
+    if (status) {
+      status.className =
+        "projection-status projection-safe-text";
+    }
+  } catch (error) {
+    console.error(
+      "Erro ao calcular projeção:",
+      error
+    );
+  }
+},
+
 
   /**
    * Renderiza o gráfico principal.

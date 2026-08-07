@@ -897,3 +897,118 @@ form > button:hover {
 .btn-cancel-edit:hover {
   background: #f1f5f9;
 }
+
+.projection-panel {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  margin-bottom: 24px;
+}
+
+.projection-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+.projection-header h2 {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.projection-header p {
+  color: var(--text2);
+  font-size: 13px;
+}
+
+.projection-status {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.projection-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.projection-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.projection-item span {
+  color: var(--text2);
+  font-size: 13px;
+}
+
+.projection-item strong {
+  font-size: 19px;
+}
+
+.projection-progress {
+  width: 100%;
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.projection-progress-value {
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  transition:
+    width 0.4s ease,
+    background-color 0.3s ease;
+}
+
+.projection-safe {
+  background: #22c55e;
+}
+
+.projection-warning {
+  background: #f59e0b;
+}
+
+.projection-danger {
+  background: #ef4444;
+}
+
+.projection-safe-text {
+  color: #16a34a;
+}
+
+.projection-danger-text {
+  color: #dc2626;
+}
+
+.projection-message {
+  margin-top: 14px;
+  color: var(--text2);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .projection-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 550px) {
+  .projection-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .projection-header {
+    flex-direction: column;
+  }
+}
