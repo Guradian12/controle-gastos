@@ -517,19 +517,97 @@ renderSpendingProjection(
         : 0;
 
     this.setCurrency(
-      "projectionTotal",
-      projectedTotal
-    );
+  "projectionTotal",
+  projectedTotal
+);
 
-    this.setCurrency(
-      "projectionDailyAverage",
-      dailyAverage
-    );
+this.setCurrency(
+  "projectionDailyAverage",
+  dailyAverage
+);
 
-    this.setCurrency(
-      "projectionDailyAllowed",
-      dailyAllowed
+this.setCurrency(
+  "projectionDailyAllowed",
+  dailyAllowed
+);
+
+this.setCurrency(
+  "projectionLimit",
+  monthlyLimit
+);
+
+const projectionTotalElement =
+  document.getElementById(
+    "projectionTotal"
+  );
+
+const dailyAverageElement =
+  document.getElementById(
+    "projectionDailyAverage"
+  );
+
+const dailyAllowedElement =
+  document.getElementById(
+    "projectionDailyAllowed"
+  );
+
+const projectionLimitElement =
+  document.getElementById(
+    "projectionLimit"
+  );
+
+[
+  projectionTotalElement,
+  dailyAverageElement,
+  dailyAllowedElement,
+  projectionLimitElement
+].forEach(element => {
+  element?.classList.remove(
+    "positive",
+    "negative",
+    "neutral",
+    "projection-value-safe",
+    "projection-value-warning",
+    "projection-value-danger",
+    "projection-value-info",
+    "projection-value-neutral"
+  );
+});
+
+if (projectionTotalElement) {
+  if (
+    monthlyLimit > 0 &&
+    projectedTotal > monthlyLimit
+  ) {
+    projectionTotalElement.classList.add(
+      "projection-value-danger"
     );
+  } else if (
+    monthlyLimit > 0 &&
+    projectedTotal >=
+      monthlyLimit * 0.85
+  ) {
+    projectionTotalElement.classList.add(
+      "projection-value-warning"
+    );
+  } else {
+    projectionTotalElement.classList.add(
+      "projection-value-safe"
+    );
+  }
+}
+
+dailyAverageElement?.classList.add(
+  "projection-value-neutral"
+);
+
+dailyAllowedElement?.classList.add(
+  "projection-value-info"
+);
+
+projectionLimitElement?.classList.add(
+  "projection-value-neutral"
+);
 
     const progressBar =
       document.getElementById(

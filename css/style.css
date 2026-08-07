@@ -1229,3 +1229,25 @@ form > button:hover {
     gap: 4px;
   }
 }
+
+/* CORES DOS VALORES DA PROJEÇÃO */
+
+.projection-value-safe {
+  color: #16a34a !important;
+}
+
+.projection-value-warning {
+  color: #d97706 !important;
+}
+
+.projection-value-danger {
+  color: #dc2626 !important;
+}
+
+.projection-value-info {
+  color: #2563eb !important;
+}
+
+.projection-value-neutral {
+  color: #0f172a !important;
+}
