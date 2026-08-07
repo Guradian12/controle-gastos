@@ -343,6 +343,12 @@ populateCategories() {
        year
      );
     
+      this.renderDashboardLimits(
+       month,
+       year
+     );
+
+
     } catch (error) {
       console.error(
         "Erro ao atualizar o Dashboard:",
@@ -640,6 +646,186 @@ renderSpendingProjection(
   }
 },
 
+/**
+ * Renderiza os limites por categoria
+ * dentro do Dashboard.
+ */
+renderDashboardLimits(
+  month,
+  year
+) {
+  try {
+    const container =
+      document.getElementById(
+        "dashboardLimitsList"
+      );
+
+    if (!container) {
+      return;
+    }
+
+    const statuses =
+      Expenses.getAllCategoryLimitStatuses(
+        month,
+        year
+      );
+
+    const activeLimits =
+      statuses
+        .filter(item =>
+          Number(item.limite) > 0
+        )
+        .sort(
+          (first, second) =>
+            Number(second.percentual) -
+            Number(first.percentual)
+        );
+
+    if (!activeLimits.length) {
+      container.innerHTML = `
+        <p class="empty-message">
+          Nenhum limite por categoria configurado.
+        </p>
+      `;
+
+      return;
+    }
+
+    container.innerHTML =
+      activeLimits
+        .map(item => {
+          const limit =
+            Number(item.limite) || 0;
+
+          const used =
+            Number(item.utilizado) || 0;
+
+          const remaining =
+            Math.max(
+              limit - used,
+              0
+            );
+
+          const percentage =
+            Number(item.percentual) || 0;
+
+          const visualPercentage =
+            Math.min(
+              Math.max(
+                percentage,
+                0
+              ),
+              100
+            );
+
+          let statusClass =
+            "dashboard-limit-safe";
+
+          let statusText =
+            "Dentro do limite";
+
+          if (percentage >= 100) {
+            statusClass =
+              "dashboard-limit-danger";
+
+            statusText =
+              "Limite excedido";
+          } else if (
+            percentage >= 90
+          ) {
+            statusClass =
+              "dashboard-limit-danger";
+
+            statusText =
+              "Muito próximo do limite";
+          } else if (
+            percentage >= 70
+          ) {
+            statusClass =
+              "dashboard-limit-warning";
+
+            statusText =
+              "Atenção";
+          }
+
+          return `
+            <div class="dashboard-limit-item">
+
+              <div class="dashboard-limit-top">
+
+                <div class="dashboard-limit-name">
+                  <span
+                    class="dashboard-limit-dot"
+                    style="background:${
+                      this.escapeHTML(
+                        item.cor ||
+                        "#727786"
+                      )
+                    }"
+                  ></span>
+
+                  <strong>
+                    ${this.escapeHTML(
+                      item.categoriaNome ||
+                      "Categoria"
+                    )}
+                  </strong>
+                </div>
+
+                <strong class="${statusClass}">
+                  ${Math.round(
+                    percentage
+                  )}%
+                </strong>
+
+              </div>
+
+              <div class="dashboard-limit-values">
+
+                <span>
+                  ${this.formatCurrency(
+                    used
+                  )}
+                  de
+                  ${this.formatCurrency(
+                    limit
+                  )}
+                </span>
+
+                <span>
+                  Restam
+                  ${this.formatCurrency(
+                    remaining
+                  )}
+                </span>
+
+              </div>
+
+              <div class="dashboard-limit-track">
+
+                <div
+                  class="dashboard-limit-fill ${statusClass}"
+                  style="width:${visualPercentage}%"
+                ></div>
+
+              </div>
+
+              <small class="${statusClass}">
+                ${statusText}
+              </small>
+
+            </div>
+          `;
+        })
+        .join("");
+
+  } catch (error) {
+    console.error(
+      "Erro ao carregar limites no Dashboard:",
+      error
+    );
+  }
+},
 
   /**
    * Renderiza o gráfico principal.
