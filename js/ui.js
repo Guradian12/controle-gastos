@@ -8,6 +8,7 @@
 const UI = {
   currentPage: "dashboard",
   dashboardChart: null,
+  editingExpenseId: null,
 
   /**
    * Formata valores monetários.
@@ -888,87 +889,227 @@ renderIncomesList(incomes) {
     });
 },
 
-  /**
-   * Formulário de gastos.
-   */
-  bindExpenseForm() {
-    const form =
-      document.getElementById(
-        "formGasto"
-      );
+ /**
+ * Formulário de gastos.
+ */
+bindExpenseForm() {
+  const form =
+    document.getElementById(
+      "formGasto"
+    );
 
-    if (!form) {
-      return;
-    }
+  if (!form) {
+    return;
+  }
 
-    form.addEventListener(
-      "submit",
-      event => {
-        event.preventDefault();
+  form.addEventListener(
+    "submit",
+    event => {
+      event.preventDefault();
 
-        try {
-          const payload = {
-            valor:
-              Number(
-                document.getElementById(
-                  "valorGasto"
-                ).value
-              ),
-
-            categoriaId:
+      try {
+        const payload = {
+          valor:
+            Number(
               document.getElementById(
-                "categoriaGasto"
-              ).value,
-
-            descricao:
-              document.getElementById(
-                "descricaoGasto"
-              ).value.trim(),
-
-            data:
-              document.getElementById(
-                "dataGasto"
+                "valorGasto"
               ).value
-          };
+            ),
 
-          this.callModuleMethod(
-            Expenses,
-            [
-              "createExpense",
-              "addExpense",
-              "createGasto"
-            ],
-            payload
+          categoriaId:
+            document.getElementById(
+              "categoriaGasto"
+            ).value,
+
+          descricao:
+            document.getElementById(
+              "descricaoGasto"
+            ).value.trim(),
+
+          data:
+            document.getElementById(
+              "dataGasto"
+            ).value
+        };
+
+        if (this.editingExpenseId) {
+          Expenses.update(
+            this.editingExpenseId,
+            payload,
+            "gasto"
           );
 
-          form.reset();
-
-          this.setDefaultDates();
+          this.showMessage(
+            "Gasto atualizado com sucesso."
+          );
+        } else {
+          Expenses.createExpense(
+            payload
+          );
 
           this.showMessage(
             "Gasto salvo com sucesso."
           );
-
-          this.refreshAll();
-          this.renderExpensesPage();
-        } catch (error) {
-          console.error(error);
-
-          
-
-          this.showMessage(
-            error.message ||
-            "Não foi possível salvar o gasto.",
-            "error"
-          );
         }
+
+        this.resetExpenseForm();
+
+        this.refreshAll();
+        this.renderExpensesPage();
+      } catch (error) {
+        console.error(error);
+
+        this.showMessage(
+          error.message ||
+          "Não foi possível salvar o gasto.",
+          "error"
+        );
       }
-    );
-  },
+    }
+  );
+},
 
 /**
- * Formulário de Limites.
+ * Inicia a edição de um gasto.
  */
+startExpenseEdit(expenseId) {
+  const expense =
+    Expenses.findById(
+      expenseId,
+      "gasto"
+    );
+
+  if (!expense) {
+    this.showMessage(
+      "Gasto não encontrado.",
+      "error"
+    );
+
+    return;
+  }
+
+  this.editingExpenseId =
+    expense.id;
+
+  document.getElementById(
+    "valorGasto"
+  ).value =
+    expense.valor;
+
+  document.getElementById(
+    "categoriaGasto"
+  ).value =
+    expense.categoriaId;
+
+  document.getElementById(
+    "descricaoGasto"
+  ).value =
+    expense.descricao;
+
+  document.getElementById(
+    "dataGasto"
+  ).value =
+    expense.data;
+
+  const form =
+    document.getElementById(
+      "formGasto"
+    );
+
+  const submitButton =
+    form?.querySelector(
+      'button[type="submit"]'
+    );
+
+  if (submitButton) {
+    submitButton.textContent =
+      "Atualizar gasto";
+  }
+
+  this.createCancelExpenseButton();
+
+  form?.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+},
+
+/**
+ * Cria o botão cancelar edição.
+ */
+createCancelExpenseButton() {
+  const form =
+    document.getElementById(
+      "formGasto"
+    );
+
+  if (
+    !form ||
+    document.getElementById(
+      "cancelarEdicaoGasto"
+    )
+  ) {
+    return;
+  }
+
+  const button =
+    document.createElement(
+      "button"
+    );
+
+  button.type = "button";
+
+  button.id =
+    "cancelarEdicaoGasto";
+
+  button.className =
+    "btn-cancel-edit";
+
+  button.textContent =
+    "Cancelar edição";
+
+  button.addEventListener(
+    "click",
+    () => {
+      this.resetExpenseForm();
+    }
+  );
+
+  form.appendChild(button);
+},
+
+/**
+ * Volta o formulário ao modo normal.
+ */
+resetExpenseForm() {
+  const form =
+    document.getElementById(
+      "formGasto"
+    );
+
+  this.editingExpenseId =
+    null;
+
+  form?.reset();
+
+  this.setDefaultDates();
+
+  const submitButton =
+    form?.querySelector(
+      'button[type="submit"]'
+    );
+
+  if (submitButton) {
+    submitButton.textContent =
+      "Salvar gasto";
+  }
+
+  document
+    .getElementById(
+      "cancelarEdicaoGasto"
+    )
+    ?.remove();
+},
 
 /**
  * Atualiza a página de Gastos.
@@ -1055,6 +1196,16 @@ renderExpensesList(expenses) {
 
             <button
               type="button"
+              class="btn-edit-expense"
+              data-expense-id="${this.escapeHTML(
+                expense.id
+              )}"
+            >
+              Editar
+            </button>
+
+            <button
+              type="button"
               class="btn-delete-expense"
               data-expense-id="${this.escapeHTML(
                 expense.id
@@ -1066,6 +1217,21 @@ renderExpensesList(expenses) {
         </div>
       `)
       .join("");
+
+  container
+    .querySelectorAll(
+      ".btn-edit-expense"
+    )
+    .forEach(button => {
+      button.addEventListener(
+        "click",
+        () => {
+          this.startExpenseEdit(
+            button.dataset.expenseId
+          );
+        }
+      );
+    });
 
   container
     .querySelectorAll(
@@ -1101,12 +1267,18 @@ renderExpensesList(expenses) {
               );
             }
 
+            if (
+              this.editingExpenseId ===
+              expenseId
+            ) {
+              this.resetExpenseForm();
+            }
+
             this.showMessage(
               "Gasto excluído com sucesso."
             );
 
             this.refreshAll();
-            this.renderExpensesPage();
           } catch (error) {
             console.error(error);
 

@@ -872,3 +872,28 @@ form > button:hover {
 .btn-delete-income:active {
   transform: translateY(0);
 }
+
+.btn-edit-expense {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-edit-expense:hover {
+  opacity: 0.9;
+}
+
+.btn-cancel-edit {
+  border: 1px solid #cbd5e1;
+  background: transparent;
+  color: var(--text);
+}
+
+.btn-cancel-edit:hover {
+  background: #f1f5f9;
+}
