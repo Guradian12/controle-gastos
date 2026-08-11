@@ -363,6 +363,10 @@ getSelectedMonth() {
        year
      );
 
+      this.renderFinancialHistory(
+       year
+     );
+
 
     } catch (error) {
       console.error(
@@ -915,6 +919,188 @@ renderDashboardLimits(
   } catch (error) {
     console.error(
       "Erro ao carregar limites no Dashboard:",
+      error
+    );
+  }
+},
+
+/**
+ * Renderiza o histórico financeiro
+ * dos últimos meses do ano selecionado.
+ */
+renderFinancialHistory(year) {
+  try {
+    const container =
+      document.getElementById(
+        "financialHistoryList"
+      );
+
+    if (!container) {
+      return;
+    }
+
+    const monthNames = [
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro"
+    ];
+
+    const currentDate =
+      new Date();
+
+    const currentYear =
+      currentDate.getFullYear();
+
+    const currentMonth =
+      currentDate.getMonth();
+
+    const lastMonth =
+      Number(year) === currentYear
+        ? currentMonth
+        : 11;
+
+    const history = [];
+
+    let accumulatedSavings = 0;
+
+    for (
+      let month = 0;
+      month <= lastMonth;
+      month++
+    ) {
+      const summary =
+        Expenses.getMonthlySummary(
+          month,
+          year
+        );
+
+      const income =
+        Number(
+          summary.receitas
+        ) || 0;
+
+      const expenses =
+        Number(
+          summary.gastos
+        ) || 0;
+
+      const savings =
+        income - expenses;
+
+      accumulatedSavings +=
+        savings;
+
+      if (
+        income === 0 &&
+        expenses === 0
+      ) {
+        continue;
+      }
+
+      history.push({
+        month,
+        name:
+          monthNames[month],
+        income,
+        expenses,
+        savings,
+        accumulatedSavings
+      });
+    }
+
+    if (!history.length) {
+      container.innerHTML = `
+        <p class="empty-message">
+          Nenhum histórico disponível para este ano.
+        </p>
+      `;
+
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="financial-history-table">
+
+        <div class="financial-history-row financial-history-head">
+
+          <span>Mês</span>
+
+          <span>Receitas</span>
+
+          <span>Gastos</span>
+
+          <span>Economia</span>
+
+          <span>Acumulado</span>
+
+        </div>
+
+        ${history
+          .slice(-6)
+          .reverse()
+          .map(item => `
+            <div class="financial-history-row">
+
+              <strong>
+                ${this.escapeHTML(
+                  item.name
+                )}
+              </strong>
+
+              <span class="positive">
+                ${this.formatCurrency(
+                  item.income
+                )}
+              </span>
+
+              <span class="negative">
+                ${this.formatCurrency(
+                  item.expenses
+                )}
+              </span>
+
+              <span class="${
+                item.savings >= 0
+                  ? "positive"
+                  : "negative"
+              }">
+                ${
+                  item.savings > 0
+                    ? "+"
+                    : ""
+                }${this.formatCurrency(
+                  item.savings
+                )}
+              </span>
+
+              <strong class="${
+                item.accumulatedSavings >= 0
+                  ? "positive"
+                  : "negative"
+              }">
+                ${this.formatCurrency(
+                  item.accumulatedSavings
+                )}
+              </strong>
+
+            </div>
+          `)
+          .join("")}
+
+      </div>
+    `;
+  } catch (error) {
+    console.error(
+      "Erro ao carregar histórico financeiro:",
       error
     );
   }
