@@ -1251,3 +1251,144 @@ form > button:hover {
 .projection-value-neutral {
   color: #0f172a !important;
 }
+
+/* =========================
+   ÚLTIMOS LANÇAMENTOS
+   ========================= */
+
+#ultimosLancamentos {
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-transaction {
+  display: grid;
+  grid-template-columns:
+    42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+
+  padding: 14px 0;
+
+  border-bottom:
+    1px solid #e2e8f0;
+}
+
+.recent-transaction:last-child {
+  border-bottom: none;
+}
+
+.recent-transaction-icon {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.recent-transaction-info {
+  min-width: 0;
+}
+
+.recent-transaction-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 4px;
+}
+
+.recent-transaction-title strong {
+  color: #0f172a;
+  font-size: 14px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-type-badge {
+  padding: 3px 7px;
+
+  border-radius: 999px;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.recent-transaction-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #64748b;
+  font-size: 11px;
+}
+
+.recent-transaction-value {
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+
+/* RECEITA */
+
+.recent-income {
+  color: #15803d;
+  background: #f0fdf4;
+}
+
+
+/* GASTO */
+
+.recent-expense {
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+
+/* POKER */
+
+.recent-poker {
+  color: #7c3aed;
+  background: #f5f3ff;
+}
+
+
+/* BETS */
+
+.recent-bet {
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+
+/* OUTROS */
+
+.recent-neutral {
+  color: #475569;
+  background: #f1f5f9;
+}
+
+
+@media (max-width: 600px) {
+  .recent-transaction {
+    grid-template-columns:
+      38px minmax(0, 1fr);
+  }
+
+  .recent-transaction-value {
+    grid-column: 2;
+  }
+
+  .recent-transaction-title {
+    flex-wrap: wrap;
+  }
+}

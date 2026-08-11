@@ -1124,69 +1124,190 @@ renderDashboardLimits(
         .join("");
   },
 
-  /**
-   * Atualiza os últimos lançamentos.
-   */
-  renderRecentTransactions(activities) {
-    const container =
-      document.getElementById(
-        "ultimosLancamentos"
-      );
+ /**
+ * Renderiza os últimos lançamentos
+ * do Dashboard.
+ */
+renderRecentTransactions(activities) {
+  const container =
+    document.getElementById(
+      "ultimosLancamentos"
+    );
 
-    if (!container) {
-      return;
-    }
+  if (!container) {
+    return;
+  }
 
-    const list =
-      Array.isArray(activities)
-        ? activities
-        : [];
+  const list =
+    Array.isArray(activities)
+      ? activities
+      : [];
 
-    if (!list.length) {
-      container.innerHTML = `
-        <p class="empty-message">
-          Nenhum lançamento registrado.
-        </p>
-      `;
+  if (!list.length) {
+    container.innerHTML = `
+      <p class="empty-message">
+        Nenhum lançamento registrado.
+      </p>
+    `;
 
-      return;
-    }
+    return;
+  }
 
-    container.innerHTML =
-      list
-        .slice(0, 8)
-        .map(activity => `
-          <div class="transaction-item">
-            <div>
-              <strong>
-                ${this.escapeHTML(
-                  activity.title ||
-                  "Lançamento"
-                )}
-              </strong>
+  container.innerHTML =
+    list
+      .slice(0, 8)
+      .map(activity => {
+        const type =
+          String(
+            activity.type ||
+            activity.tipo ||
+            ""
+          ).toLowerCase();
 
-              <small>
-                ${this.formatDate(
-                  activity.date
-                )}
-              </small>
+        let typeLabel =
+          "Lançamento";
+
+        let typeClass =
+          "recent-neutral";
+
+        let icon =
+          "•";
+
+        if (
+          type.includes("receita") ||
+          type.includes("income")
+        ) {
+          typeLabel =
+            "Receita";
+
+          typeClass =
+            "recent-income";
+
+          icon = "↗";
+        } else if (
+          type.includes("gasto") ||
+          type.includes("expense")
+        ) {
+          typeLabel =
+            "Gasto";
+
+          typeClass =
+            "recent-expense";
+
+          icon = "↘";
+        } else if (
+          type.includes("poker")
+        ) {
+          typeLabel =
+            "Poker";
+
+          typeClass =
+            "recent-poker";
+
+          icon = "♠";
+        } else if (
+          type.includes("bet")
+        ) {
+          typeLabel =
+            "Bets";
+
+          typeClass =
+            "recent-bet";
+
+          icon = "⚽";
+        }
+
+        const title =
+          activity.title ||
+          activity.descricao ||
+          typeLabel;
+
+        const category =
+          activity.category ||
+          activity.categoria ||
+          activity.categoriaNome ||
+          activity.source ||
+          "";
+
+        const date =
+          activity.date ||
+          activity.data ||
+          "";
+
+        const result =
+          Number(
+            activity.result ??
+            activity.valor ??
+            activity.resultado ??
+            0
+          ) || 0;
+
+        return `
+          <div class="recent-transaction">
+
+            <div class="recent-transaction-icon ${typeClass}">
+              ${icon}
             </div>
 
-            <strong class="${
-              Number(
-                activity.result
-              ) >= 0
+            <div class="recent-transaction-info">
+
+              <div class="recent-transaction-title">
+
+                <strong>
+                  ${this.escapeHTML(
+                    title
+                  )}
+                </strong>
+
+                <span class="recent-type-badge ${typeClass}">
+                  ${typeLabel}
+                </span>
+
+              </div>
+
+              <div class="recent-transaction-meta">
+
+                ${
+                  category
+                    ? `
+                      <span>
+                        ${this.escapeHTML(
+                          category
+                        )}
+                      </span>
+                    `
+                    : ""
+                }
+
+                <span>
+                  ${this.formatDate(
+                    date
+                  )}
+                </span>
+
+              </div>
+
+            </div>
+
+            <strong class="recent-transaction-value ${
+              result >= 0
                 ? "positive"
                 : "negative"
             }">
-              ${this.formatCurrency(
-                activity.result
+              ${
+                result > 0
+                  ? "+"
+                  : ""
+              }${this.formatCurrency(
+                result
               )}
             </strong>
+
           </div>
-        `)
-        .join("");
-  },
+        `;
+      })
+      .join("");
+},
 
   /**
    * Procura um método disponível em um módulo.
