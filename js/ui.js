@@ -941,7 +941,7 @@ renderDashboardChart(data) {
   }
 
   const month =
-    new Date().getMonth();
+    this.getSelectedMonth();
 
   const year =
     this.getSelectedYear();
@@ -3183,20 +3183,34 @@ renderBetsList(bets) {
 },
 
   /**
-   * Configura o filtro do Dashboard.
-   */
-  bindDashboardFilter() {
-    document
-      .getElementById(
-        "filtroAnoDashboard"
-      )
-      ?.addEventListener(
-        "change",
-        () => {
-          this.renderDashboard();
-        }
-      );
-  },
+ * Configura os filtros de mês e ano
+ * do Dashboard.
+ */
+bindDashboardFilter() {
+  const monthFilter =
+    document.getElementById(
+      "filtroMesDashboard"
+    );
+
+  const yearFilter =
+    document.getElementById(
+      "filtroAnoDashboard"
+    );
+
+  const updateDashboard = () => {
+    this.renderDashboard();
+  };
+
+  monthFilter?.addEventListener(
+    "change",
+    updateDashboard
+  );
+
+  yearFilter?.addEventListener(
+    "change",
+    updateDashboard
+  );
+},
 
   /**
    * Configura exportação e limpeza de dados.
