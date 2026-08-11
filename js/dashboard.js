@@ -609,15 +609,21 @@ const Dashboard = {
   ) {
     const activities = [];
 
-    const recentIncomes =
-      financeData.ultimasReceitas ??
-      financeData.receitasRecentes ??
-      [];
+    const recentTransactions =
+  financeData.ultimosLancamentos ??
+  [];
 
-    const recentExpenses =
-      financeData.ultimosGastos ??
-      financeData.gastosRecentes ??
-      [];
+const recentIncomes =
+  recentTransactions.filter(
+    transaction =>
+      transaction.tipo === "receita"
+  );
+
+const recentExpenses =
+  recentTransactions.filter(
+    transaction =>
+      transaction.tipo === "gasto"
+  );
 
     recentIncomes.forEach(income => {
       activities.push({
