@@ -1195,6 +1195,9 @@ const Expenses = {
           year
         ),
 
+      saldoGeral:
+        this.getBalance(),
+
       limiteDiario:
         this.getDailyLimitStatus(),
 

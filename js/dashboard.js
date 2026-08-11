@@ -323,6 +323,11 @@ const Dashboard = {
         expenses
       );
 
+    const accumulatedSavings =
+       this.toNumber(
+         financeData.saldoGeral
+      );
+
     const pokerResult =
       this.getMonthlyPokerResult(
         pokerData
@@ -344,7 +349,9 @@ const Dashboard = {
       receitas: income,
       gastos: expenses,
       saldoPessoal: personalBalance,
-
+      
+      economiaAcumulada: accumulatedSavings,
+       
       poker: pokerResult,
       bets: betsResult,
 

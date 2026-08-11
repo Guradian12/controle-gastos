@@ -313,7 +313,7 @@ getSelectedMonth() {
 
       this.setCurrency(
         "saldoAtual",
-        summary.saldoCombinado
+        summary.saldoPessoal
       );
 
       this.setCurrency(
@@ -328,7 +328,7 @@ getSelectedMonth() {
 
       this.setCurrency(
         "economizado",
-        summary.saldoPessoal
+        summary.economiaAcumulada
       );
 
       this.setCurrency(
