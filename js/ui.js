@@ -261,6 +261,21 @@ populateCategories() {
       });
   },
 
+   /**
+ * Retorna o mês selecionado no Dashboard.
+ */
+getSelectedMonth() {
+  const select =
+    document.getElementById(
+      "filtroMesDashboard"
+    );
+
+  return Number(
+    select?.value ??
+    new Date().getMonth()
+  );
+},
+
   /**
    * Retorna o ano selecionado.
    */
@@ -285,7 +300,7 @@ populateCategories() {
         this.getSelectedYear();
 
       const month =
-        new Date().getMonth();
+        this.getSelectedMonth();
 
       const data =
         Dashboard.getData(
@@ -3554,6 +3569,18 @@ importInput?.addEventListener(
 
     this.bindSettings();
     this.setDefaultDates();
+
+    const monthFilter =
+  document.getElementById(
+    "filtroMesDashboard"
+  );
+
+if (monthFilter) {
+  monthFilter.value =
+    String(
+      new Date().getMonth()
+    );
+}
 
     this.navigate(
       "dashboard"
