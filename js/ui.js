@@ -906,111 +906,259 @@ renderDashboardLimits(
 },
 
   /**
-   * Renderiza o gráfico principal.
-   */
-  renderDashboardChart(data) {
-    const canvas =
-      document.getElementById(
-        "graficoMensal"
+ * Renderiza a evolução financeira do mês.
+ */
+renderDashboardChart(data) {
+  const canvas =
+    document.getElementById(
+      "graficoMensal"
+    );
+
+  if (
+    !canvas ||
+    typeof Chart === "undefined"
+  ) {
+    return;
+  }
+
+  if (this.dashboardChart) {
+    this.dashboardChart.destroy();
+  }
+
+  const month =
+    new Date().getMonth();
+
+  const year =
+    this.getSelectedYear();
+
+  const transactions =
+    Expenses.getByMonth(
+      month,
+      year
+    );
+
+  const daysInMonth =
+    new Date(
+      year,
+      month + 1,
+      0
+    ).getDate();
+
+  const labels = [];
+
+  const incomeByDay = [];
+  const expenseByDay = [];
+  const balanceByDay = [];
+
+  let accumulatedBalance = 0;
+
+  for (
+    let day = 1;
+    day <= daysInMonth;
+    day++
+  ) {
+    labels.push(
+      String(day).padStart(
+        2,
+        "0"
+      )
+    );
+
+    const date =
+      `${year}-${String(
+        month + 1
+      ).padStart(
+        2,
+        "0"
+      )}-${String(day).padStart(
+        2,
+        "0"
+      )}`;
+
+    const dayTransactions =
+      transactions.filter(
+        transaction =>
+          transaction.data === date &&
+          (
+            typeof Expenses.isEffective !==
+              "function" ||
+            Expenses.isEffective(
+              transaction
+            )
+          )
       );
 
-    if (
-      !canvas ||
-      typeof Chart === "undefined"
-    ) {
-      return;
-    }
+    const income =
+      dayTransactions
+        .filter(
+          transaction =>
+            transaction.tipo ===
+            "receita"
+        )
+        .reduce(
+          (total, transaction) =>
+            total +
+            (
+              Number(
+                transaction.valor
+              ) || 0
+            ),
+          0
+        );
 
-    if (this.dashboardChart) {
-      this.dashboardChart.destroy();
-    }
+    const expense =
+      dayTransactions
+        .filter(
+          transaction =>
+            transaction.tipo ===
+            "gasto"
+        )
+        .reduce(
+          (total, transaction) =>
+            total +
+            (
+              Number(
+                transaction.valor
+              ) || 0
+            ),
+          0
+        );
 
-    const summary =
-      data.resumo || {};
+    accumulatedBalance +=
+      income - expense;
 
-    this.dashboardChart =
-      new Chart(
-        canvas.getContext("2d"),
-        {
-          type: "bar",
+    incomeByDay.push(
+      income
+    );
 
-          data: {
-            labels: [
-              "Receitas",
-              "Gastos",
-              "Saldo pessoal",
-              "Poker",
-              "Bets"
-            ],
+    expenseByDay.push(
+      expense
+    );
 
-            datasets: [
-              {
-                label:
-                  "Resultado do mês",
+    balanceByDay.push(
+      accumulatedBalance
+    );
+  }
 
-                data: [
-                  Number(
-                    summary.receitas
-                  ) || 0,
+  this.dashboardChart =
+    new Chart(
+      canvas.getContext("2d"),
+      {
+        type: "line",
 
-                  Number(
-                    summary.gastos
-                  ) || 0,
+        data: {
+          labels,
 
-                  Number(
-                    summary.saldoPessoal
-                  ) || 0,
+          datasets: [
+            {
+              label:
+                "Saldo acumulado",
 
-                  Number(
-                    summary.poker
-                  ) || 0,
+              data:
+                balanceByDay,
 
-                  Number(
-                    summary.bets
-                  ) || 0
-                ],
+              borderWidth: 3,
 
-                borderWidth: 1,
-                borderRadius: 8
-              }
-            ]
+              tension: 0.35,
+
+              pointRadius: 2,
+
+              pointHoverRadius: 5,
+
+              fill: false
+            },
+
+            {
+              label:
+                "Receitas",
+
+              data:
+                incomeByDay,
+
+              borderWidth: 2,
+
+              tension: 0.25,
+
+              pointRadius: 1,
+
+              pointHoverRadius: 4
+            },
+
+            {
+              label:
+                "Gastos",
+
+              data:
+                expenseByDay,
+
+              borderWidth: 2,
+
+              tension: 0.25,
+
+              pointRadius: 1,
+
+              pointHoverRadius: 4
+            }
+          ]
+        },
+
+        options: {
+          responsive: true,
+
+          maintainAspectRatio: false,
+
+          interaction: {
+            mode: "index",
+            intersect: false
           },
 
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
 
-            plugins: {
-              legend: {
-                display: false
+              position:
+                "top"
+            },
+
+            tooltip: {
+              callbacks: {
+                label: context => {
+                  return `${context.dataset.label}: ${this.formatCurrency(
+                    context.parsed.y
+                  )}`;
+                }
+              }
+            }
+          },
+
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Dia do mês"
               },
 
-              tooltip: {
-                callbacks: {
-                  label: context =>
-                    this.formatCurrency(
-                      context.parsed.y
-                    )
-                }
+              grid: {
+                display: false
               }
             },
 
-            scales: {
-              y: {
-                beginAtZero: true,
+            y: {
+              beginAtZero: true,
 
-                ticks: {
-                  callback: value =>
+              ticks: {
+                callback:
+                  value =>
                     this.formatCurrency(
                       value
                     )
-                }
               }
             }
           }
         }
-      );
-  },
+      }
+    );
+},
 
   /**
    * Atualiza o círculo de despesas.
