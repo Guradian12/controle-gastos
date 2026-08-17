@@ -1559,3 +1559,873 @@ form > button:hover {
   }
 
 }
+
+/* =========================================================
+   TEMA REFINADO — VINHO / BORDÔ
+   Camada visual adicionada sem alterar estrutura ou funções.
+   ========================================================= */
+
+:root {
+  --primary: #9f1239;
+  --primary-dark: #7f1d32;
+  --secondary: #be123c;
+
+  --green: #22c55e;
+  --red: #fb4b6d;
+  --yellow: #f59e0b;
+
+  --background: #09090d;
+  --surface: #101015;
+  --surface-soft: #15151c;
+  --surface-elevated: #191920;
+
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(190, 18, 60, 0.28);
+
+  --text: #f5f5f7;
+  --text-secondary: #9b9ba8;
+
+  --sidebar-width: 248px;
+
+  --wine: #be123c;
+  --wine-deep: #4a0b1d;
+  --wine-soft: rgba(190, 18, 60, 0.12);
+  --wine-glow: rgba(190, 18, 60, 0.18);
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+
+  --shadow-soft:
+    0 14px 34px rgba(0, 0, 0, 0.18);
+
+  --shadow-card:
+    0 10px 28px rgba(0, 0, 0, 0.24);
+}
+
+html {
+  background: var(--background);
+}
+
+body {
+  background:
+    radial-gradient(
+      circle at 12% 0%,
+      rgba(127, 29, 50, 0.14),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(190, 18, 60, 0.06),
+      transparent 22%
+    ),
+    var(--background);
+
+  color: var(--text);
+  font-family:
+    Inter,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Estrutura ---------- */
+
+.app-layout {
+  background: transparent;
+}
+
+.main-content {
+  padding: 28px 30px 40px;
+}
+
+/* ---------- Sidebar ---------- */
+
+.sidebar {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(37, 6, 17, 0.96) 0%,
+      rgba(14, 10, 15, 0.98) 42%,
+      #0a0a0e 100%
+    );
+
+  border-right: 1px solid rgba(190, 18, 60, 0.22);
+  box-shadow:
+    12px 0 40px rgba(0, 0, 0, 0.18);
+}
+
+.sidebar-logo {
+  min-height: 88px;
+  padding: 20px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-logo-icon {
+  width: 40px;
+  height: 40px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #d13259 0%,
+      #8f1234 100%
+    );
+
+  box-shadow:
+    0 8px 22px rgba(190, 18, 60, 0.18);
+}
+
+.sidebar-logo h2 {
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-section {
+  padding: 16px 12px 0;
+}
+
+.sidebar-title {
+  margin: 0 10px 9px;
+  color: #6f6f79;
+  font-size: 10px;
+  letter-spacing: 0.11em;
+}
+
+.sidebar-menu {
+  gap: 4px;
+}
+
+.sidebar-link {
+  position: relative;
+  min-height: 44px;
+  gap: 11px;
+
+  padding: 10px 13px;
+
+  border: 1px solid transparent;
+  border-radius: 10px;
+
+  color: #b7b7c0;
+  font-size: 13px;
+  font-weight: 570;
+
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.sidebar-link:hover {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+.sidebar-link.active {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(190, 18, 60, 0.24),
+      rgba(127, 29, 50, 0.12)
+    );
+
+  border-color: rgba(190, 18, 60, 0.22);
+  color: #ffffff;
+
+  box-shadow:
+    inset 3px 0 0 #c51d4a,
+    0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.sidebar-footer {
+  padding-bottom: 18px;
+}
+
+/* ---------- Cabeçalhos ---------- */
+
+.page > header {
+  margin-bottom: 24px;
+}
+
+.page > header h1 {
+  color: #ffffff;
+  font-size: 27px;
+  font-weight: 760;
+  letter-spacing: -0.035em;
+}
+
+.page > header p {
+  margin-top: 7px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+/* ---------- Cards principais ---------- */
+
+.cards,
+.game-summary {
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+
+  padding: 19px 20px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.025),
+      rgba(255, 255, 255, 0.008)
+    ),
+    var(--surface);
+
+  box-shadow: var(--shadow-soft);
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.card::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.08),
+      transparent
+    );
+
+  content: "";
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(190, 18, 60, 0.2);
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.26);
+}
+
+.card h3 {
+  color: #aaaab4;
+  font-size: 12px;
+  font-weight: 620;
+}
+
+.card h2 {
+  margin-top: 11px;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 740;
+  letter-spacing: -0.035em;
+}
+
+.card small {
+  margin-top: 8px;
+  color: #767680;
+  font-size: 11px;
+}
+
+.card.saldo,
+.card.receita,
+.card.gasto,
+.card.economia,
+.poker-card,
+.bet-card {
+  border-left: 1px solid var(--border);
+}
+
+.card.saldo {
+  background:
+    radial-gradient(
+      circle at 0% 0%,
+      rgba(190, 18, 60, 0.12),
+      transparent 55%
+    ),
+    var(--surface);
+}
+
+.card.receita {
+  background:
+    radial-gradient(
+      circle at 0% 0%,
+      rgba(34, 197, 94, 0.07),
+      transparent 52%
+    ),
+    var(--surface);
+}
+
+.card.gasto {
+  background:
+    radial-gradient(
+      circle at 0% 0%,
+      rgba(251, 75, 109, 0.08),
+      transparent 52%
+    ),
+    var(--surface);
+}
+
+.card.economia {
+  background:
+    radial-gradient(
+      circle at 0% 0%,
+      rgba(190, 18, 60, 0.09),
+      transparent 52%
+    ),
+    var(--surface);
+}
+
+/* ---------- Painéis ---------- */
+
+.dashboard-grid {
+  gap: 14px;
+}
+
+.dashboard-column {
+  gap: 14px;
+}
+
+.grafico,
+.ultimos,
+.panel,
+.projection-panel,
+.limits-dashboard-panel,
+.financial-history-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.018),
+      rgba(255, 255, 255, 0.005)
+    ),
+    var(--surface);
+
+  box-shadow: var(--shadow-soft);
+}
+
+.grafico,
+.ultimos,
+.panel {
+  padding: 20px;
+}
+
+.panel-header {
+  margin-bottom: 17px;
+}
+
+.panel-header h2,
+.grafico h2,
+.ultimos h2,
+.panel h2 {
+  color: #f4f4f6;
+  font-size: 16px;
+  font-weight: 690;
+  letter-spacing: -0.02em;
+}
+
+.panel-header select {
+  height: 36px;
+  padding: 0 11px;
+
+  border: 1px solid var(--border);
+  border-radius: 9px;
+
+  background: #141419;
+  color: #d7d7dd;
+
+  outline: none;
+}
+
+.panel-header select:focus {
+  border-color: rgba(190, 18, 60, 0.45);
+  box-shadow:
+    0 0 0 3px rgba(190, 18, 60, 0.08);
+}
+
+.chart-area {
+  height: 300px;
+}
+
+/* ---------- Donut ---------- */
+
+.donut {
+  background:
+    conic-gradient(
+      var(--donut-color)
+        calc(var(--percentage) * 1%),
+      #24242b 0
+    );
+
+  box-shadow:
+    0 0 30px rgba(190, 18, 60, 0.08);
+}
+
+.donut::after {
+  background: #101015;
+}
+
+.donut-content strong {
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.donut-content span {
+  color: #85858f;
+}
+
+.legend-item {
+  color: #c4c4cc;
+}
+
+.legend-color {
+  box-shadow:
+    0 0 8px rgba(190, 18, 60, 0.18);
+}
+
+/* ---------- Formulários ---------- */
+
+form {
+  gap: 14px;
+
+  margin-bottom: 18px;
+  padding: 20px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  background: var(--surface);
+
+  box-shadow: var(--shadow-soft);
+}
+
+.form-group label {
+  color: #c2c2ca;
+  font-size: 12px;
+  font-weight: 620;
+}
+
+.form-group input,
+.form-group select {
+  height: 43px;
+
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 9px;
+
+  background: #15151b;
+  color: #efeff2;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.form-group input:hover,
+.form-group select:hover {
+  background: #18181f;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: rgba(190, 18, 60, 0.55);
+  box-shadow:
+    0 0 0 3px rgba(190, 18, 60, 0.1);
+}
+
+form > button,
+#config > button {
+  border-radius: 9px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #b71944,
+      #8d1233
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 7px 18px rgba(190, 18, 60, 0.14);
+
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+form > button:hover,
+#config > button:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #c91c4b,
+      #9a1438
+    );
+
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 22px rgba(190, 18, 60, 0.2);
+}
+
+/* ---------- Listas ---------- */
+
+#listaReceitas,
+#listaGastos,
+#listaPoker,
+#listaBets {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.transaction-item,
+.list-item {
+  border-bottom-color: rgba(255, 255, 255, 0.055);
+}
+
+.transaction-item small,
+.list-item small {
+  color: #7e7e88;
+}
+
+.empty-message {
+  color: #767680;
+}
+
+/* ---------- Botões de ação ---------- */
+
+.btn-delete-bet,
+.btn-delete-poker,
+.btn-delete-expense,
+.btn-delete-income {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  color: #fb7185;
+}
+
+.btn-edit-expense {
+  background: rgba(190, 18, 60, 0.12);
+  border: 1px solid rgba(190, 18, 60, 0.18);
+  color: #fb7185;
+}
+
+.btn-cancel-edit {
+  border-color: rgba(255, 255, 255, 0.09);
+  background: transparent;
+  color: #b6b6bf;
+}
+
+.btn-cancel-edit:hover {
+  background: rgba(255, 255, 255, 0.045);
+}
+
+/* ---------- Limites ---------- */
+
+.limit-card {
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface);
+}
+
+.progress-bar,
+.dashboard-limit-track,
+.projection-progress {
+  background: #24242b;
+}
+
+.progress-value,
+.dashboard-limit-fill {
+  box-shadow:
+    0 0 10px rgba(190, 18, 60, 0.12);
+}
+
+.limit-values {
+  color: #85858f;
+}
+
+/* ---------- Projeção ---------- */
+
+.projection-panel,
+.limits-dashboard-panel,
+.financial-history-panel {
+  padding: 22px;
+  margin-bottom: 18px;
+}
+
+.projection-header h2,
+.limits-dashboard-header h2,
+.financial-history-header h2 {
+  color: #f5f5f7;
+  font-size: 19px;
+  font-weight: 710;
+  letter-spacing: -0.025em;
+}
+
+.projection-header p,
+.limits-dashboard-header p,
+.financial-history-header p {
+  color: #888893;
+}
+
+.projection-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.02),
+      transparent
+    ),
+    #141419;
+}
+
+.projection-item span {
+  color: #85858f;
+}
+
+.projection-item strong {
+  color: #f4f4f6;
+}
+
+.projection-message {
+  background: #141419;
+  border-left-color: rgba(190, 18, 60, 0.55);
+  color: #a6a6b0;
+}
+
+.projection-danger-text {
+  color: #fb7185;
+  background: rgba(239, 68, 68, 0.09);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.projection-safe-text {
+  color: #4ade80;
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.18);
+}
+
+/* ---------- Limites no dashboard ---------- */
+
+.dashboard-limit-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.018),
+      transparent
+    ),
+    #141419;
+}
+
+.dashboard-limit-name strong {
+  color: #eeeeF1;
+}
+
+.dashboard-limit-values {
+  color: #85858f;
+}
+
+.dashboard-limit-item:hover {
+  background: #17171d;
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+/* ---------- Últimos lançamentos ---------- */
+
+.recent-transaction {
+  border-bottom-color: rgba(255, 255, 255, 0.055);
+}
+
+.recent-transaction-title strong {
+  color: #ededf0;
+}
+
+.recent-transaction-meta {
+  color: #7e7e88;
+}
+
+.recent-income {
+  color: #4ade80;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.recent-expense {
+  color: #fb7185;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.recent-poker {
+  color: #d8b4fe;
+  background: rgba(147, 51, 234, 0.1);
+}
+
+.recent-bet {
+  color: #fb7185;
+  background: rgba(190, 18, 60, 0.1);
+}
+
+.recent-neutral {
+  color: #b7b7c0;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ---------- Histórico financeiro ---------- */
+
+.financial-history-row {
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: #141419;
+}
+
+.financial-history-row strong {
+  color: #eeeeF1;
+}
+
+.financial-history-head {
+  background: transparent;
+  border: none;
+}
+
+.financial-history-head span {
+  color: #777782;
+}
+
+.financial-history-row:not(.financial-history-head):hover {
+  background: #18181f;
+  box-shadow:
+    0 7px 18px rgba(0, 0, 0, 0.18);
+}
+
+/* ---------- Cores semânticas ---------- */
+
+.positive,
+.limit-text-normal,
+.projection-value-safe,
+.dashboard-limit-safe {
+  color: #4ade80 !important;
+}
+
+.negative,
+.limit-text-danger,
+.projection-value-danger,
+.dashboard-limit-danger {
+  color: #fb7185 !important;
+}
+
+.limit-text-warning,
+.projection-value-warning,
+.dashboard-limit-warning {
+  color: #fbbf24 !important;
+}
+
+.projection-value-info {
+  color: #f472b6 !important;
+}
+
+.projection-value-neutral {
+  color: #eeeeF1 !important;
+}
+
+/* ---------- Seleção / scrollbar ---------- */
+
+::selection {
+  background: rgba(190, 18, 60, 0.34);
+  color: #ffffff;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #4d1729 #101015;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: #101015;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid #101015;
+  border-radius: 999px;
+  background: #4d1729;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6e1833;
+}
+
+/* ---------- Responsividade refinada ---------- */
+
+@media (max-width: 1100px) {
+  .main-content {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 800px) {
+  .sidebar {
+    border-right: 0;
+    border-bottom: 1px solid rgba(190, 18, 60, 0.18);
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-content {
+    padding: 14px;
+  }
+
+  .card,
+  .grafico,
+  .ultimos,
+  .panel,
+  .projection-panel,
+  .limits-dashboard-panel,
+  .financial-history-panel,
+  form,
+  #listaReceitas,
+  #listaGastos,
+  #listaPoker,
+  #listaBets {
+    border-radius: 13px;
+  }
+}
