@@ -30,6 +30,14 @@ const App = {
       Bets.initialize?.();
     }
 
+    if (typeof ML !== "undefined") {
+      ML.initialize?.();
+    }
+
+    if (typeof Miwra !== "undefined") {
+      Miwra.initialize?.();
+    }
+
     if (typeof Dashboard !== "undefined") {
       Dashboard.initialize?.();
     }

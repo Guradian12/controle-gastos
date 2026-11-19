@@ -3735,6 +3735,19 @@ importInput?.addEventListener(
         this.renderBetsPage();
         break;
 
+
+      case "mercadolivre":
+        if (typeof ML !== "undefined") {
+          ML.render();
+        }
+        break;
+
+      case "miwra":
+        if (typeof Miwra !== "undefined") {
+          Miwra.render();
+        }
+        break;
+  
       default:
         break;
     }
