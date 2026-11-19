@@ -3025,6 +3025,104 @@ renderLimitsPage() {
     );
   },
 
+
+  /**
+   * Formulário de vendas do Mercado Livre.
+   */
+  bindMLForm() {
+    const form =
+      document.getElementById(
+        "formML"
+      );
+
+    if (!form) {
+      return;
+    }
+
+    form.addEventListener(
+      "submit",
+      event => {
+        event.preventDefault();
+
+        try {
+          const sale = {
+            produto:
+              document.getElementById(
+                "produtoML"
+              ).value.trim(),
+
+            data:
+              document.getElementById(
+                "dataML"
+              ).value,
+
+            precoCompra:
+              Number(
+                document.getElementById(
+                  "precoCompraML"
+                ).value
+              ),
+
+            precoVenda:
+              Number(
+                document.getElementById(
+                  "precoVendaML"
+                ).value
+              ),
+
+            taxas:
+              Number(
+                document.getElementById(
+                  "taxasML"
+                ).value || 0
+              ),
+
+            outrosCustos:
+              Number(
+                document.getElementById(
+                  "outrosCustosML"
+                ).value || 0
+              ),
+
+            descricao:
+              document.getElementById(
+                "descricaoML"
+              ).value.trim()
+          };
+
+          const result =
+            ML.createSale(sale);
+
+          if (!result.success) {
+            throw new Error(
+              result.errors.join(" ")
+            );
+          }
+
+          form.reset();
+
+          this.setDefaultDates();
+
+          this.showMessage(
+            "Venda cadastrada com sucesso."
+          );
+
+          this.renderMLPage();
+
+        } catch (error) {
+          console.error(error);
+
+          this.showMessage(
+            error.message ||
+            "Não foi possível cadastrar a venda.",
+            "error"
+          );
+        }
+      }
+    );
+  },
+
+
   /**
    * Atualiza a página Poker.
    */
