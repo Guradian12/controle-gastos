@@ -134,6 +134,7 @@ const UI = {
       "dataGasto",
       "dataPoker",
       "dataBet"
+      "dataML"
     ].forEach(id => {
       const input =
         document.getElementById(id);
@@ -4006,7 +4007,7 @@ renderMiwraPage() {
     this.bindLimitsForm();
     this.bindPokerForm();
     this.bindBetForm();
-
+    this.bindMLForm();
     this.bindSettings();
     this.setDefaultDates();
 
