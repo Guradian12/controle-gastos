@@ -85,10 +85,9 @@ const App = {
               Detalhes técnicos
             </summary>
 
-            <pre>${UI?.escapeHTML?.(
-              error?.message ||
-              String(error)
-            ) || String(error)}</pre>
+            <pre>${typeof UI !== "undefined" && UI.escapeHTML
+            ? UI.escapeHTML(error?.message || String(error))
+            : String(error?.message || error)}</pre>
           </details>
         </div>
       </main>
