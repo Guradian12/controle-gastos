@@ -30,11 +30,9 @@
           ◔
         </div>
 
-        <div>
-          <h2>
-            Dashboard<br>
-            Finanças Pessoais
-          </h2>
+        <div class="sidebar-brand-text">
+          <h2>Finanças</h2>
+          <span>Pessoais</span>
         </div>
 
       </div>
@@ -121,7 +119,7 @@
 
     </aside>
 
-    <!-- CONTEÚDO PRINCIPAL -->
+    <!-- CONTEUDO PRINCIPAL -->
 
     <main class="main-content">
 
@@ -132,73 +130,314 @@
         class="page active"
       >
 
-        <header>
-          <h1>Visão Geral</h1>
+        <header class="dashboard-topbar">
 
-          <p>
-            Acompanhe sua vida financeira em um só lugar
-          </p>
+          <div class="dashboard-welcome">
+
+            <span class="eyebrow">
+              VISÃO GERAL
+            </span>
+
+            <h1>
+              Seu controle financeiro
+            </h1>
+
+            <p>
+              Acompanhe sua vida financeira em um só lugar.
+            </p>
+
+          </div>
+
+          <div class="dashboard-period">
+
+            <span>
+              Período
+            </span>
+
+            <strong>
+              Mês atual
+            </strong>
+
+          </div>
+
         </header>
+
 
         <div class="cards">
 
-          <div class="card saldo">
+          <div class="card saldo metric-card">
 
-            <h3>Saldo atual</h3>
+            <div class="metric-icon">
+              ▣
+            </div>
 
-            <h2 id="saldoAtual">
-              R$ 0,00
-            </h2>
+            <div class="metric-content">
 
-            <small>
-              Saldo disponível
-            </small>
+              <h3>
+                Saldo do mês
+              </h3>
 
-          </div>
+              <h2 id="saldoAtual">
+                R$ 0,00
+              </h2>
 
-          <div class="card receita">
+              <small>
+                Receitas menos despesas
+              </small>
 
-            <h3>Receitas do mês</h3>
-
-            <h2 id="totalReceitas">
-              R$ 0,00
-            </h2>
-
-            <small>
-              Total recebido
-            </small>
+            </div>
 
           </div>
 
-          <div class="card gasto">
 
-            <h3>Despesas do mês</h3>
+          <div class="card receita metric-card">
 
-            <h2 id="totalGastos">
-              R$ 0,00
-            </h2>
+            <div class="metric-icon">
+              ↗
+            </div>
 
-            <small>
-              Total utilizado
-            </small>
+            <div class="metric-content">
+
+              <h3>
+                Receitas do mês
+              </h3>
+
+              <h2 id="totalReceitas">
+                R$ 0,00
+              </h2>
+
+              <small>
+                Total recebido
+              </small>
+
+            </div>
 
           </div>
 
-          <div class="card economia">
 
-            <h3>Economizado</h3>
+          <div class="card gasto metric-card">
 
-            <h2 id="economizado">
-              R$ 0,00
-            </h2>
+            <div class="metric-icon">
+              ↘
+            </div>
 
-            <small>
-              Diferença entre receitas e despesas
-            </small>
+            <div class="metric-content">
+
+              <h3>
+                Despesas do mês
+              </h3>
+
+              <h2 id="totalGastos">
+                R$ 0,00
+              </h2>
+
+              <small>
+                Total utilizado
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <div class="card economia metric-card">
+
+            <div class="metric-icon">
+              ◇
+            </div>
+
+            <div class="metric-content">
+
+              <h3>
+                Economia acumulada
+              </h3>
+
+              <h2 id="economizado">
+                R$ 0,00
+              </h2>
+
+              <small>
+                Resultado desde o início
+              </small>
+
+            </div>
 
           </div>
 
         </div>
+
+
+        <!-- PROJEÇÃO DO MÊS -->
+
+        <div class="projection-panel">
+
+          <div class="projection-header">
+
+            <div>
+
+              <h2>
+                Projeção do mês
+              </h2>
+
+              <p>
+                Estimativa baseada no seu ritmo atual de gastos
+              </p>
+
+            </div>
+
+            <strong
+              id="projectionStatus"
+              class="projection-status"
+            >
+              Calculando...
+            </strong>
+
+          </div>
+
+
+          <div class="projection-grid">
+
+            <div class="projection-item">
+
+              <span>
+                Projeção de gastos
+              </span>
+
+              <strong id="projectionTotal">
+                R$ 0,00
+              </strong>
+
+            </div>
+
+
+            <div class="projection-item">
+
+              <span>
+                Média diária atual
+              </span>
+
+              <strong id="projectionDailyAverage">
+                R$ 0,00
+              </strong>
+
+            </div>
+
+
+            <div class="projection-item">
+
+              <span>
+                Pode gastar por dia
+              </span>
+
+              <strong id="projectionDailyAllowed">
+                R$ 0,00
+              </strong>
+
+            </div>
+
+
+            <div class="projection-item">
+
+              <span>
+                Limite mensal
+              </span>
+
+              <strong id="projectionLimit">
+                R$ 0,00
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="projection-progress">
+
+            <div
+              id="projectionProgressBar"
+              class="projection-progress-value"
+            ></div>
+
+          </div>
+
+
+          <p
+            id="projectionMessage"
+            class="projection-message"
+          ></p>
+
+        </div>
+
+
+        <!-- LIMITES EM ATENÇÃO -->
+
+        <div class="limits-dashboard-panel">
+
+          <div class="limits-dashboard-header">
+
+            <div>
+
+              <h2>
+                Limites em atenção
+              </h2>
+
+              <p>
+                Acompanhe o uso do orçamento por categoria
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div
+            id="dashboardLimitsList"
+            class="dashboard-limits-list"
+          >
+
+            <p class="empty-message">
+              Carregando limites...
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- EVOLUÇÃO FINANCEIRA -->
+
+        <div class="financial-history-panel">
+
+          <div class="financial-history-header">
+
+            <div>
+
+              <h2>
+                Evolução financeira
+              </h2>
+
+              <p>
+                Acompanhe receitas, gastos e economia ao longo dos meses
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div
+            id="financialHistoryList"
+            class="financial-history-list"
+          >
+
+            <p class="empty-message">
+              Carregando histórico...
+            </p>
+
+          </div>
+
+        </div>
+
 
         <div class="dashboard-grid">
 
@@ -210,27 +449,94 @@
 
               <div class="panel-header">
 
-                <h2>
-                  Análise mensal
-                </h2>
+                <div>
 
-                <select id="filtroAnoDashboard">
+                  <span class="panel-kicker">
+                    FLUXO DE CAIXA
+                  </span>
 
-                  <option value="2026">
-                    2026
-                  </option>
+                  <h2>
+                    Análise mensal
+                  </h2>
 
-                  <option value="2025">
-                    2025
-                  </option>
+                </div>
 
-                  <option value="2024">
-                    2024
-                  </option>
 
-                </select>
+                <div class="dashboard-filters">
+
+                  <select id="filtroMesDashboard">
+
+                    <option value="0">
+                      Janeiro
+                    </option>
+
+                    <option value="1">
+                      Fevereiro
+                    </option>
+
+                    <option value="2">
+                      Março
+                    </option>
+
+                    <option value="3">
+                      Abril
+                    </option>
+
+                    <option value="4">
+                      Maio
+                    </option>
+
+                    <option value="5">
+                      Junho
+                    </option>
+
+                    <option value="6">
+                      Julho
+                    </option>
+
+                    <option value="7">
+                      Agosto
+                    </option>
+
+                    <option value="8">
+                      Setembro
+                    </option>
+
+                    <option value="9">
+                      Outubro
+                    </option>
+
+                    <option value="10">
+                      Novembro
+                    </option>
+
+                    <option value="11">
+                      Dezembro
+                    </option>
+
+                  </select>
+
+
+                  <select id="filtroAnoDashboard">
+
+                    <option value="2026">
+                      2026
+                    </option>
+
+                    <option value="2025">
+                      2025
+                    </option>
+
+                    <option value="2024">
+                      2024
+                    </option>
+
+                  </select>
+
+                </div>
 
               </div>
+
 
               <div class="chart-area">
 
@@ -239,6 +545,7 @@
               </div>
 
             </div>
+
 
             <div class="ultimos">
 
@@ -258,6 +565,7 @@
 
           </div>
 
+
           <!-- COLUNA DIREITA -->
 
           <div class="dashboard-column">
@@ -267,6 +575,7 @@
               <h2>
                 Distribuição das despesas
               </h2>
+
 
               <div class="circle-summary">
 
@@ -293,6 +602,7 @@
 
                 </div>
 
+
                 <div
                   class="chart-legend"
                   id="legendaDespesas"
@@ -309,6 +619,7 @@
 
                   </div>
 
+
                   <div class="legend-item">
 
                     <span
@@ -320,6 +631,7 @@
 
                   </div>
 
+
                   <div class="legend-item">
 
                     <span
@@ -330,6 +642,7 @@
                     Lazer
 
                   </div>
+
 
                   <div class="legend-item">
 
@@ -348,17 +661,21 @@
 
             </div>
 
+
             <div class="panel">
 
               <h2>
                 Resultado de Poker e Bets
               </h2>
 
+
               <div class="dashboard-row">
 
                 <div class="card poker-card">
 
-                  <h3>Poker</h3>
+                  <h3>
+                    Poker
+                  </h3>
 
                   <h2 id="resultadoPokerDashboard">
                     R$ 0,00
@@ -370,9 +687,12 @@
 
                 </div>
 
+
                 <div class="card bet-card">
 
-                  <h3>Bets</h3>
+                  <h3>
+                    Bets
+                  </h3>
 
                   <h2 id="resultadoBetsDashboard">
                     R$ 0,00
@@ -394,6 +714,7 @@
 
       </section>
 
+
       <!-- RECEITAS -->
 
       <section
@@ -403,13 +724,16 @@
 
         <header>
 
-          <h1>Receitas</h1>
+          <h1>
+            Receitas
+          </h1>
 
           <p>
             Registre todos os valores que entram
           </p>
 
         </header>
+
 
         <form id="formReceita">
 
@@ -430,6 +754,7 @@
 
           </div>
 
+
           <div class="form-group">
 
             <label for="categoriaReceita">
@@ -441,33 +766,14 @@
               required
             >
 
-              <option value="Salário">
-                Salário
-              </option>
-
-              <option value="Renda Fixa">
-                Renda fixa
-              </option>
-
-              <option value="Poker">
-                Poker
-              </option>
-
-              <option value="Bets">
-                Bets
-              </option>
-
-              <option value="Renda Extra">
-                Renda extra
-              </option>
-
-              <option value="Outros">
-                Outros
+              <option value="">
+                Selecione uma categoria
               </option>
 
             </select>
 
           </div>
+
 
           <div class="form-group">
 
@@ -484,6 +790,7 @@
 
           </div>
 
+
           <div class="form-group">
 
             <label for="dataReceita">
@@ -498,15 +805,18 @@
 
           </div>
 
+
           <button type="submit">
             Salvar receita
           </button>
 
         </form>
 
+
         <div id="listaReceitas"></div>
 
       </section>
+
 
       <!-- GASTOS -->
 
@@ -517,13 +827,16 @@
 
         <header>
 
-          <h1>Gastos</h1>
+          <h1>
+            Gastos
+          </h1>
 
           <p>
             Registre e acompanhe suas despesas
           </p>
 
         </header>
+
 
         <form id="formGasto">
 
@@ -544,6 +857,7 @@
 
           </div>
 
+
           <div class="form-group">
 
             <label for="categoriaGasto">
@@ -555,45 +869,14 @@
               required
             >
 
-              <option value="Alimentação">
-                Alimentação
-              </option>
-
-              <option value="Casa">
-                Casa
-              </option>
-
-              <option value="Transporte">
-                Transporte
-              </option>
-
-              <option value="Compras">
-                Compras
-              </option>
-
-              <option value="Saúde">
-                Saúde
-              </option>
-
-              <option value="Lazer">
-                Lazer
-              </option>
-
-              <option value="Estudos">
-                Estudos
-              </option>
-
-              <option value="Assinaturas">
-                Assinaturas
-              </option>
-
-              <option value="Outros">
-                Outros
+              <option value="">
+                Selecione uma categoria
               </option>
 
             </select>
 
           </div>
+
 
           <div class="form-group">
 
@@ -610,6 +893,7 @@
 
           </div>
 
+
           <div class="form-group">
 
             <label for="dataGasto">
@@ -624,15 +908,18 @@
 
           </div>
 
+
           <button type="submit">
             Salvar gasto
           </button>
 
         </form>
 
+
         <div id="listaGastos"></div>
 
       </section>
+
 
       <!-- LIMITES -->
 
@@ -643,13 +930,16 @@
 
         <header>
 
-          <h1>Limites</h1>
+          <h1>
+            Limites
+          </h1>
 
           <p>
             Defina quanto pode gastar em cada área
           </p>
 
         </header>
+
 
         <form id="formLimites">
 
@@ -669,6 +959,7 @@
 
           </div>
 
+
           <div class="form-group">
 
             <label for="metaEconomia">
@@ -684,6 +975,7 @@
             >
 
           </div>
+
 
           <div class="form-group">
 
@@ -701,6 +993,7 @@
 
           </div>
 
+
           <div class="form-group">
 
             <label for="limiteTransporte">
@@ -716,6 +1009,7 @@
             >
 
           </div>
+
 
           <div class="form-group">
 
@@ -733,6 +1027,7 @@
 
           </div>
 
+
           <div class="form-group">
 
             <label for="limitePoker">
@@ -748,6 +1043,7 @@
             >
 
           </div>
+
 
           <div class="form-group">
 
@@ -765,11 +1061,13 @@
 
           </div>
 
+
           <button type="submit">
             Salvar limites
           </button>
 
         </form>
+
 
         <div
           class="limits-grid"
@@ -780,7 +1078,9 @@
 
             <div class="limit-card-header">
 
-              <h3>Alimentação</h3>
+              <h3>
+                Alimentação
+              </h3>
 
               <span id="percentualAlimentacao">
                 0%
@@ -811,11 +1111,14 @@
 
           </div>
 
+
           <div class="limit-card">
 
             <div class="limit-card-header">
 
-              <h3>Transporte</h3>
+              <h3>
+                Transporte
+              </h3>
 
               <span id="percentualTransporte">
                 0%
@@ -846,11 +1149,14 @@
 
           </div>
 
+
           <div class="limit-card">
 
             <div class="limit-card-header">
 
-              <h3>Lazer</h3>
+              <h3>
+                Lazer
+              </h3>
 
               <span id="percentualLazer">
                 0%
@@ -881,11 +1187,14 @@
 
           </div>
 
+
           <div class="limit-card">
 
             <div class="limit-card-header">
 
-              <h3>Poker</h3>
+              <h3>
+                Poker
+              </h3>
 
               <span id="percentualPoker">
                 0%
@@ -916,11 +1225,14 @@
 
           </div>
 
+
           <div class="limit-card">
 
             <div class="limit-card-header">
 
-              <h3>Bets</h3>
+              <h3>
+                Bets
+              </h3>
 
               <span id="percentualBets">
                 0%
@@ -955,6 +1267,7 @@
 
       </section>
 
+
       <!-- POKER -->
 
       <section
@@ -964,7 +1277,9 @@
 
         <header>
 
-          <h1>Poker</h1>
+          <h1>
+            Poker
+          </h1>
 
           <p>
             Controle sua banca e os resultados das sessões
@@ -972,11 +1287,14 @@
 
         </header>
 
+
         <div class="game-summary">
 
           <div class="card poker-card">
 
-            <h3>Banca atual</h3>
+            <h3>
+              Banca atual
+            </h3>
 
             <h2 id="bancaPoker">
               R$ 0,00
@@ -984,9 +1302,12 @@
 
           </div>
 
+
           <div class="card poker-card">
 
-            <h3>Total investido</h3>
+            <h3>
+              Total investido
+            </h3>
 
             <h2 id="totalInvestidoPoker">
               R$ 0,00
@@ -994,9 +1315,12 @@
 
           </div>
 
+
           <div class="card poker-card">
 
-            <h3>Lucro ou prejuízo</h3>
+            <h3>
+              Lucro ou prejuízo
+            </h3>
 
             <h2 id="resultadoPoker">
               R$ 0,00
@@ -1005,6 +1329,7 @@
           </div>
 
         </div>
+
 
         <form id="formPoker">
 
@@ -1021,6 +1346,7 @@
             >
 
           </div>
+
 
           <div class="form-group">
 
@@ -1049,6 +1375,7 @@
 
           </div>
 
+
           <div class="form-group">
 
             <label for="localPoker">
@@ -1063,6 +1390,7 @@
             >
 
           </div>
+
 
           <div class="form-group">
 
@@ -1081,6 +1409,7 @@
 
           </div>
 
+
           <div class="form-group">
 
             <label for="reentradaPoker">
@@ -1096,6 +1425,7 @@
             >
 
           </div>
+
 
           <div class="form-group">
 
@@ -1114,6 +1444,7 @@
 
           </div>
 
+
           <div class="form-group full">
 
             <label for="observacaoPoker">
@@ -1128,15 +1459,18 @@
 
           </div>
 
+
           <button type="submit">
             Salvar sessão
           </button>
 
         </form>
 
+
         <div id="listaPoker"></div>
 
       </section>
+
 
       <!-- BETS -->
 
@@ -1147,7 +1481,9 @@
 
         <header>
 
-          <h1>Bets</h1>
+          <h1>
+            Bets
+          </h1>
 
           <p>
             Registre suas apostas e acompanhe sua banca
@@ -1155,11 +1491,14 @@
 
         </header>
 
+
         <div class="game-summary">
 
           <div class="card bet-card">
 
-            <h3>Banca atual</h3>
+            <h3>
+              Banca atual
+            </h3>
 
             <h2 id="bancaBets">
               R$ 0,00
@@ -1167,9 +1506,12 @@
 
           </div>
 
+
           <div class="card bet-card">
 
-            <h3>Total apostado</h3>
+            <h3>
+              Total apostado
+            </h3>
 
             <h2 id="totalApostado">
               R$ 0,00
@@ -1177,9 +1519,12 @@
 
           </div>
 
+
           <div class="card bet-card">
 
-            <h3>Lucro ou prejuízo</h3>
+            <h3>
+              Lucro ou prejuízo
+            </h3>
 
             <h2 id="resultadoBets">
               R$ 0,00
@@ -1188,102 +1533,123 @@
           </div>
 
         </div>
-<form id="formBet">
 
-  <div class="form-group">
-    <label for="dataBet">
-      Data
-    </label>
 
-    <input
-      type="date"
-      id="dataBet"
-      required
-    >
-  </div>
+        <form id="formBet">
 
-  <div class="form-group">
-    <label for="eventoBet">
-      Evento ou descrição
-    </label>
+          <div class="form-group">
 
-    <input
-      type="text"
-      id="eventoBet"
-      placeholder="Ex.: Cruzeiro x Atlético"
-      maxlength="150"
-      required
-    >
-  </div>
+            <label for="dataBet">
+              Data
+            </label>
 
-  <div class="form-group">
-    <label for="valorBet">
-      Valor apostado
-    </label>
+            <input
+              type="date"
+              id="dataBet"
+              required
+            >
 
-    <input
-      type="number"
-      id="valorBet"
-      placeholder="R$ 0,00"
-      step="0.01"
-      min="0.01"
-      required
-    >
-  </div>
+          </div>
 
-  <div class="form-group">
-    <label for="statusBet">
-      Resultado
-    </label>
 
-    <select
-      id="statusBet"
-      required
-    >
-      <option value="Ganha">
-        Ganha
-      </option>
+          <div class="form-group">
 
-      <option value="Perdida">
-        Perdida
-      </option>
+            <label for="eventoBet">
+              Evento ou descrição
+            </label>
 
-      <option value="Anulada">
-        Anulada
-      </option>
+            <input
+              type="text"
+              id="eventoBet"
+              placeholder="Ex.: Cruzeiro x Atlético"
+              maxlength="150"
+              required
+            >
 
-      <option value="Cash Out">
-        Cash out
-      </option>
-    </select>
-  </div>
+          </div>
 
-  <div
-    class="form-group full"
-    id="retornoBetGroup"
-  >
-    <label for="retornoBet">
-      Retorno recebido
-    </label>
 
-    <input
-      type="number"
-      id="retornoBet"
-      placeholder="R$ 0,00"
-      step="0.01"
-      min="0"
-    >
-  </div>
+          <div class="form-group">
 
-  <button type="submit">
-    Salvar aposta
-  </button>
+            <label for="valorBet">
+              Valor apostado
+            </label>
 
-</form>
-        
+            <input
+              type="number"
+              id="valorBet"
+              placeholder="R$ 0,00"
+              step="0.01"
+              min="0.01"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="statusBet">
+              Resultado
+            </label>
+
+            <select
+              id="statusBet"
+              required
+            >
+
+              <option value="Ganha">
+                Ganha
+              </option>
+
+              <option value="Perdida">
+                Perdida
+              </option>
+
+              <option value="Anulada">
+                Anulada
+              </option>
+
+              <option value="Cash Out">
+                Cash out
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div
+            class="form-group full"
+            id="retornoBetGroup"
+          >
+
+            <label for="retornoBet">
+              Retorno recebido
+            </label>
+
+            <input
+              type="number"
+              id="retornoBet"
+              placeholder="R$ 0,00"
+              step="0.01"
+              min="0"
+            >
+
+          </div>
+
+
+          <button type="submit">
+            Salvar aposta
+          </button>
+
+        </form>
+
+
         <div id="listaBets"></div>
 
       </section>
+
 
       <!-- CONFIGURAÇÕES -->
 
@@ -1294,7 +1660,9 @@
 
         <header>
 
-          <h1>Configurações</h1>
+          <h1>
+            Configurações
+          </h1>
 
           <p>
             Gerencie os dados do aplicativo
@@ -1302,13 +1670,24 @@
 
         </header>
 
+
         <button id="exportar">
           Exportar backup
         </button>
 
+
         <button id="importar">
           Importar backup
         </button>
+
+
+        <input
+          type="file"
+          id="arquivoImportacao"
+          accept=".json,application/json"
+          hidden
+        >
+
 
         <button id="limpar">
           Apagar todos os dados
@@ -1320,16 +1699,17 @@
 
   </div>
 
-<script src="js/utils.js"></script>
-<script src="js/storage.js"></script>
-<script src="js/categories.js"></script>
-<script src="js/expenses.js"></script>
-<script src="js/poker.js"></script>
-<script src="js/bets.js"></script>
-<script src="js/dashboard.js"></script>
-<script src="js/charts.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/app.js"></script>
+
+  <script src="js/utils.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/categories.js"></script>
+  <script src="js/expenses.js"></script>
+  <script src="js/poker.js"></script>
+  <script src="js/bets.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
 
 </body>
 

@@ -8,6 +8,7 @@
 const UI = {
   currentPage: "dashboard",
   dashboardChart: null,
+  editingExpenseId: null,
 
   /**
    * Formata valores monetários.
@@ -144,6 +145,55 @@ const UI = {
     });
   },
 
+/**
+ * Carrega as categorias nos formulários.
+ */
+populateCategories() {
+  const incomeSelect =
+    document.getElementById(
+      "categoriaReceita"
+    );
+
+  const expenseSelect =
+    document.getElementById(
+      "categoriaGasto"
+    );
+
+  const createOptions = categories => {
+    return [
+      `
+        <option value="">
+          Selecione uma categoria
+        </option>
+      `,
+
+      ...categories.map(category => `
+        <option value="${this.escapeHTML(
+          category.id
+        )}">
+          ${this.escapeHTML(
+            category.nome
+          )}
+        </option>
+      `)
+    ].join("");
+  };
+
+  if (incomeSelect) {
+    incomeSelect.innerHTML =
+      createOptions(
+        Categories.getReceitas()
+      );
+  }
+
+  if (expenseSelect) {
+    expenseSelect.innerHTML =
+      createOptions(
+        Categories.getGastos()
+      );
+  }
+},
+
   /**
    * Troca a página exibida.
    */
@@ -211,6 +261,21 @@ const UI = {
       });
   },
 
+   /**
+ * Retorna o mês selecionado no Dashboard.
+ */
+getSelectedMonth() {
+  const select =
+    document.getElementById(
+      "filtroMesDashboard"
+    );
+
+  return Number(
+    select?.value ??
+    new Date().getMonth()
+  );
+},
+
   /**
    * Retorna o ano selecionado.
    */
@@ -235,7 +300,7 @@ const UI = {
         this.getSelectedYear();
 
       const month =
-        new Date().getMonth();
+        this.getSelectedMonth();
 
       const data =
         Dashboard.getData(
@@ -248,7 +313,7 @@ const UI = {
 
       this.setCurrency(
         "saldoAtual",
-        summary.saldoCombinado
+        summary.saldoPessoal
       );
 
       this.setCurrency(
@@ -263,7 +328,7 @@ const UI = {
 
       this.setCurrency(
         "economizado",
-        summary.saldoPessoal
+        summary.economiaAcumulada
       );
 
       this.setCurrency(
@@ -287,6 +352,22 @@ const UI = {
       this.renderRecentTransactions(
         data.atividadesRecentes
       );
+    
+      this.renderSpendingProjection(
+       month,
+       year
+     );
+    
+      this.renderDashboardLimits(
+       month,
+       year
+     );
+
+      this.renderFinancialHistory(
+       year
+     );
+
+
     } catch (error) {
       console.error(
         "Erro ao atualizar o Dashboard:",
@@ -295,112 +376,990 @@ const UI = {
     }
   },
 
-  /**
-   * Renderiza o gráfico principal.
-   */
-  renderDashboardChart(data) {
-    const canvas =
-      document.getElementById(
-        "graficoMensal"
+/**
+ * Calcula a projeção de gastos
+ * até o final do mês.
+ */
+renderSpendingProjection(
+  month,
+  year
+) {
+  try {
+    const expenses =
+      Expenses.getByMonth(
+        month,
+        year,
+        "gasto"
       );
 
-    if (
-      !canvas ||
-      typeof Chart === "undefined"
-    ) {
+    const effectiveExpenses =
+      expenses.filter(expense => {
+        if (
+          typeof Expenses.isEffective ===
+          "function"
+        ) {
+          return Expenses.isEffective(
+            expense
+          );
+        }
+
+        return true;
+      });
+
+    const totalSpent =
+      Expenses.getExpenseTotal(
+        effectiveExpenses
+      );
+
+    const limits =
+      Storage.getLimites() || {};
+
+    const monthlyLimit =
+      Number(
+        limits.mensalGeral
+      ) || 0;
+
+    this.setCurrency(
+      "projectionLimit",
+      monthlyLimit
+    );
+
+    if (!effectiveExpenses.length) {
+      this.setCurrency(
+        "projectionTotal",
+        0
+      );
+
+      this.setCurrency(
+        "projectionDailyAverage",
+        0
+      );
+
+      this.setCurrency(
+        "projectionDailyAllowed",
+        0
+      );
+
+      this.setText(
+        "projectionStatus",
+        "Sem dados"
+      );
+
+      this.setText(
+        "projectionMessage",
+        "Cadastre seus gastos para gerar uma projeção."
+      );
+
       return;
     }
 
-    if (this.dashboardChart) {
-      this.dashboardChart.destroy();
+    const today =
+      new Date();
+
+    const daysInMonth =
+      new Date(
+        year,
+        month + 1,
+        0
+      ).getDate();
+
+    const expenseDays =
+      effectiveExpenses
+        .map(expense => {
+          const parts =
+            String(
+              expense.data
+            ).split("-");
+
+          return Number(
+            parts[2]
+          );
+        })
+        .filter(day =>
+          Number.isFinite(day)
+        );
+
+    const firstExpenseDay =
+      Math.min(
+        ...expenseDays
+      );
+
+    const currentDay =
+      today.getDate();
+
+    const observedDays =
+      Math.max(
+        1,
+        currentDay -
+        firstExpenseDay +
+        1
+      );
+
+    const dailyAverage =
+      totalSpent /
+      observedDays;
+
+    const projectionDays =
+      daysInMonth -
+      firstExpenseDay +
+      1;
+
+    const projectedTotal =
+      dailyAverage *
+      projectionDays;
+
+    const remainingBudget =
+      monthlyLimit -
+      totalSpent;
+
+    const remainingDays =
+      Math.max(
+        0,
+        daysInMonth -
+        currentDay
+      );
+
+    const dailyAllowed =
+      remainingDays > 0
+        ? Math.max(
+            remainingBudget,
+            0
+          ) / remainingDays
+        : 0;
+
+    const projectedPercentage =
+      monthlyLimit > 0
+        ? (
+            projectedTotal /
+            monthlyLimit
+          ) * 100
+        : 0;
+
+    this.setCurrency(
+  "projectionTotal",
+  projectedTotal
+);
+
+this.setCurrency(
+  "projectionDailyAverage",
+  dailyAverage
+);
+
+this.setCurrency(
+  "projectionDailyAllowed",
+  dailyAllowed
+);
+
+this.setCurrency(
+  "projectionLimit",
+  monthlyLimit
+);
+
+const projectionTotalElement =
+  document.getElementById(
+    "projectionTotal"
+  );
+
+const dailyAverageElement =
+  document.getElementById(
+    "projectionDailyAverage"
+  );
+
+const dailyAllowedElement =
+  document.getElementById(
+    "projectionDailyAllowed"
+  );
+
+const projectionLimitElement =
+  document.getElementById(
+    "projectionLimit"
+  );
+
+[
+  projectionTotalElement,
+  dailyAverageElement,
+  dailyAllowedElement,
+  projectionLimitElement
+].forEach(element => {
+  element?.classList.remove(
+    "positive",
+    "negative",
+    "neutral",
+    "projection-value-safe",
+    "projection-value-warning",
+    "projection-value-danger",
+    "projection-value-info",
+    "projection-value-neutral"
+  );
+});
+
+if (projectionTotalElement) {
+  if (
+    monthlyLimit > 0 &&
+    projectedTotal > monthlyLimit
+  ) {
+    projectionTotalElement.classList.add(
+      "projection-value-danger"
+    );
+  } else if (
+    monthlyLimit > 0 &&
+    projectedTotal >=
+      monthlyLimit * 0.85
+  ) {
+    projectionTotalElement.classList.add(
+      "projection-value-warning"
+    );
+  } else {
+    projectionTotalElement.classList.add(
+      "projection-value-safe"
+    );
+  }
+}
+
+dailyAverageElement?.classList.add(
+  "projection-value-neutral"
+);
+
+dailyAllowedElement?.classList.add(
+  "projection-value-info"
+);
+
+projectionLimitElement?.classList.add(
+  "projection-value-neutral"
+);
+
+    const progressBar =
+      document.getElementById(
+        "projectionProgressBar"
+      );
+
+    if (progressBar) {
+      progressBar.style.width =
+        `${Math.min(
+          projectedPercentage,
+          100
+        )}%`;
+
+      progressBar.classList.remove(
+        "projection-safe",
+        "projection-warning",
+        "projection-danger"
+      );
+
+      if (
+        projectedPercentage >
+        100
+      ) {
+        progressBar.classList.add(
+          "projection-danger"
+        );
+      } else if (
+        projectedPercentage >= 85
+      ) {
+        progressBar.classList.add(
+          "projection-warning"
+        );
+      } else {
+        progressBar.classList.add(
+          "projection-safe"
+        );
+      }
     }
 
-    const summary =
-      data.resumo || {};
+    const status =
+      document.getElementById(
+        "projectionStatus"
+      );
 
-    this.dashboardChart =
-      new Chart(
-        canvas.getContext("2d"),
-        {
-          type: "bar",
+    if (monthlyLimit <= 0) {
+      this.setText(
+        "projectionStatus",
+        "Sem limite definido"
+      );
 
-          data: {
-            labels: [
-              "Receitas",
-              "Gastos",
-              "Saldo pessoal",
-              "Poker",
-              "Bets"
-            ],
+      this.setText(
+        "projectionMessage",
+        "Defina um limite mensal para comparar sua projeção."
+      );
 
-            datasets: [
-              {
-                label:
-                  "Resultado do mês",
+      return;
+    }
 
-                data: [
-                  Number(
-                    summary.receitas
-                  ) || 0,
+    if (
+      projectedTotal >
+      monthlyLimit
+    ) {
+      const excess =
+        projectedTotal -
+        monthlyLimit;
 
-                  Number(
-                    summary.gastos
-                  ) || 0,
+      this.setText(
+        "projectionStatus",
+        "Acima do ritmo"
+      );
 
-                  Number(
-                    summary.saldoPessoal
-                  ) || 0,
+      this.setText(
+        "projectionMessage",
+        `No ritmo atual, você poderá ultrapassar o limite em ${this.formatCurrency(
+          excess
+        )}. Para cumprir o orçamento, tente manter os próximos gastos em até ${this.formatCurrency(
+          dailyAllowed
+        )} por dia.`
+      );
 
-                  Number(
-                    summary.poker
-                  ) || 0,
+      if (status) {
+        status.className =
+          "projection-status projection-danger-text";
+      }
 
-                  Number(
-                    summary.bets
-                  ) || 0
-                ],
+      return;
+    }
 
-                borderWidth: 1,
-                borderRadius: 8
-              }
-            ]
+    const projectedRemaining =
+      monthlyLimit -
+      projectedTotal;
+
+    this.setText(
+      "projectionStatus",
+      "Dentro do limite"
+    );
+
+    this.setText(
+      "projectionMessage",
+      `Mantendo esse ritmo, você deve terminar o mês ${this.formatCurrency(
+        projectedRemaining
+      )} abaixo do limite.`
+    );
+
+    if (status) {
+      status.className =
+        "projection-status projection-safe-text";
+    }
+  } catch (error) {
+    console.error(
+      "Erro ao calcular projeção:",
+      error
+    );
+  }
+},
+
+/**
+ * Renderiza os limites por categoria
+ * dentro do Dashboard.
+ */
+renderDashboardLimits(
+  month,
+  year
+) {
+  try {
+    const container =
+      document.getElementById(
+        "dashboardLimitsList"
+      );
+
+    if (!container) {
+      return;
+    }
+
+    const statuses =
+      Expenses.getAllCategoryLimitStatuses(
+        month,
+        year
+      );
+
+    const activeLimits =
+      statuses
+        .filter(item =>
+          Number(item.limite) > 0
+        )
+        .sort(
+          (first, second) =>
+            Number(second.percentual) -
+            Number(first.percentual)
+        );
+
+    if (!activeLimits.length) {
+      container.innerHTML = `
+        <p class="empty-message">
+          Nenhum limite por categoria configurado.
+        </p>
+      `;
+
+      return;
+    }
+
+    container.innerHTML =
+      activeLimits
+        .map(item => {
+          const limit =
+            Number(item.limite) || 0;
+
+          const used =
+            Number(item.utilizado) || 0;
+
+          const remaining =
+            Math.max(
+              limit - used,
+              0
+            );
+
+          const percentage =
+            Number(item.percentual) || 0;
+
+          const visualPercentage =
+            Math.min(
+              Math.max(
+                percentage,
+                0
+              ),
+              100
+            );
+
+          let statusClass =
+            "dashboard-limit-safe";
+
+          let statusText =
+            "Dentro do limite";
+
+          if (percentage >= 100) {
+            statusClass =
+              "dashboard-limit-danger";
+
+            statusText =
+              "Limite excedido";
+          } else if (
+            percentage >= 90
+          ) {
+            statusClass =
+              "dashboard-limit-danger";
+
+            statusText =
+              "Muito próximo do limite";
+          } else if (
+            percentage >= 70
+          ) {
+            statusClass =
+              "dashboard-limit-warning";
+
+            statusText =
+              "Atenção";
+          }
+
+          return `
+            <div class="dashboard-limit-item">
+
+              <div class="dashboard-limit-top">
+
+                <div class="dashboard-limit-name">
+                  <span
+                    class="dashboard-limit-dot"
+                    style="background:${
+                      this.escapeHTML(
+                        item.cor ||
+                        "#727786"
+                      )
+                    }"
+                  ></span>
+
+                  <strong>
+                    ${this.escapeHTML(
+                      item.categoriaNome ||
+                      "Categoria"
+                    )}
+                  </strong>
+                </div>
+
+                <strong class="${statusClass}">
+                  ${Math.round(
+                    percentage
+                  )}%
+                </strong>
+
+              </div>
+
+              <div class="dashboard-limit-values">
+
+                <span>
+                  ${this.formatCurrency(
+                    used
+                  )}
+                  de
+                  ${this.formatCurrency(
+                    limit
+                  )}
+                </span>
+
+                <span>
+                  Restam
+                  ${this.formatCurrency(
+                    remaining
+                  )}
+                </span>
+
+              </div>
+
+              <div class="dashboard-limit-track">
+
+                <div
+                  class="dashboard-limit-fill ${statusClass}"
+                  style="width:${visualPercentage}%"
+                ></div>
+
+              </div>
+
+              <small class="${statusClass}">
+                ${statusText}
+              </small>
+
+            </div>
+          `;
+        })
+        .join("");
+
+  } catch (error) {
+    console.error(
+      "Erro ao carregar limites no Dashboard:",
+      error
+    );
+  }
+},
+
+/**
+ * Renderiza o histórico financeiro
+ * dos últimos meses do ano selecionado.
+ */
+renderFinancialHistory(year) {
+  try {
+    const container =
+      document.getElementById(
+        "financialHistoryList"
+      );
+
+    if (!container) {
+      return;
+    }
+
+    const monthNames = [
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro"
+    ];
+
+    const currentDate =
+      new Date();
+
+    const currentYear =
+      currentDate.getFullYear();
+
+    const currentMonth =
+      currentDate.getMonth();
+
+    const lastMonth =
+      Number(year) === currentYear
+        ? currentMonth
+        : 11;
+
+    const history = [];
+
+    let accumulatedSavings = 0;
+
+    for (
+      let month = 0;
+      month <= lastMonth;
+      month++
+    ) {
+      const summary =
+        Expenses.getMonthlySummary(
+          month,
+          year
+        );
+
+      const income =
+        Number(
+          summary.receitas
+        ) || 0;
+
+      const expenses =
+        Number(
+          summary.gastos
+        ) || 0;
+
+      const savings =
+        income - expenses;
+
+      accumulatedSavings +=
+        savings;
+
+      if (
+        income === 0 &&
+        expenses === 0
+      ) {
+        continue;
+      }
+
+      history.push({
+        month,
+        name:
+          monthNames[month],
+        income,
+        expenses,
+        savings,
+        accumulatedSavings
+      });
+    }
+
+    if (!history.length) {
+      container.innerHTML = `
+        <p class="empty-message">
+          Nenhum histórico disponível para este ano.
+        </p>
+      `;
+
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="financial-history-table">
+
+        <div class="financial-history-row financial-history-head">
+
+          <span>Mês</span>
+
+          <span>Receitas</span>
+
+          <span>Gastos</span>
+
+          <span>Economia</span>
+
+          <span>Acumulado</span>
+
+        </div>
+
+        ${history
+          .slice(-6)
+          .reverse()
+          .map(item => `
+            <div class="financial-history-row">
+
+              <strong>
+                ${this.escapeHTML(
+                  item.name
+                )}
+              </strong>
+
+              <span class="positive">
+                ${this.formatCurrency(
+                  item.income
+                )}
+              </span>
+
+              <span class="negative">
+                ${this.formatCurrency(
+                  item.expenses
+                )}
+              </span>
+
+              <span class="${
+                item.savings >= 0
+                  ? "positive"
+                  : "negative"
+              }">
+                ${
+                  item.savings > 0
+                    ? "+"
+                    : ""
+                }${this.formatCurrency(
+                  item.savings
+                )}
+              </span>
+
+              <strong class="${
+                item.accumulatedSavings >= 0
+                  ? "positive"
+                  : "negative"
+              }">
+                ${this.formatCurrency(
+                  item.accumulatedSavings
+                )}
+              </strong>
+
+            </div>
+          `)
+          .join("")}
+
+      </div>
+    `;
+  } catch (error) {
+    console.error(
+      "Erro ao carregar histórico financeiro:",
+      error
+    );
+  }
+},
+
+  /**
+ * Renderiza a evolução financeira do mês.
+ */
+renderDashboardChart(data) {
+  const canvas =
+    document.getElementById(
+      "graficoMensal"
+    );
+
+  if (
+    !canvas ||
+    typeof Chart === "undefined"
+  ) {
+    return;
+  }
+
+  if (this.dashboardChart) {
+    this.dashboardChart.destroy();
+  }
+
+  const month =
+    this.getSelectedMonth();
+
+  const year =
+    this.getSelectedYear();
+
+  const transactions =
+    Expenses.getByMonth(
+      month,
+      year
+    );
+
+  const daysInMonth =
+    new Date(
+      year,
+      month + 1,
+      0
+    ).getDate();
+
+  const labels = [];
+
+  const incomeByDay = [];
+  const expenseByDay = [];
+  const balanceByDay = [];
+
+  let accumulatedBalance = 0;
+
+  for (
+    let day = 1;
+    day <= daysInMonth;
+    day++
+  ) {
+    labels.push(
+      String(day).padStart(
+        2,
+        "0"
+      )
+    );
+
+    const date =
+      `${year}-${String(
+        month + 1
+      ).padStart(
+        2,
+        "0"
+      )}-${String(day).padStart(
+        2,
+        "0"
+      )}`;
+
+    const dayTransactions =
+      transactions.filter(
+        transaction =>
+          transaction.data === date &&
+          (
+            typeof Expenses.isEffective !==
+              "function" ||
+            Expenses.isEffective(
+              transaction
+            )
+          )
+      );
+
+    const income =
+      dayTransactions
+        .filter(
+          transaction =>
+            transaction.tipo ===
+            "receita"
+        )
+        .reduce(
+          (total, transaction) =>
+            total +
+            (
+              Number(
+                transaction.valor
+              ) || 0
+            ),
+          0
+        );
+
+    const expense =
+      dayTransactions
+        .filter(
+          transaction =>
+            transaction.tipo ===
+            "gasto"
+        )
+        .reduce(
+          (total, transaction) =>
+            total +
+            (
+              Number(
+                transaction.valor
+              ) || 0
+            ),
+          0
+        );
+
+    accumulatedBalance +=
+      income - expense;
+
+    incomeByDay.push(
+      income
+    );
+
+    expenseByDay.push(
+      expense
+    );
+
+    balanceByDay.push(
+      accumulatedBalance
+    );
+  }
+
+  this.dashboardChart =
+    new Chart(
+      canvas.getContext("2d"),
+      {
+        type: "line",
+
+        data: {
+          labels,
+
+          datasets: [
+            {
+              label:
+                "Saldo acumulado",
+
+              data:
+                balanceByDay,
+
+              borderWidth: 3,
+
+              tension: 0.35,
+
+              pointRadius: 2,
+
+              pointHoverRadius: 5,
+
+              fill: false
+            },
+
+            {
+              label:
+                "Receitas",
+
+              data:
+                incomeByDay,
+
+              borderWidth: 2,
+
+              tension: 0.25,
+
+              pointRadius: 1,
+
+              pointHoverRadius: 4
+            },
+
+            {
+              label:
+                "Gastos",
+
+              data:
+                expenseByDay,
+
+              borderWidth: 2,
+
+              tension: 0.25,
+
+              pointRadius: 1,
+
+              pointHoverRadius: 4
+            }
+          ]
+        },
+
+        options: {
+          responsive: true,
+
+          maintainAspectRatio: false,
+
+          interaction: {
+            mode: "index",
+            intersect: false
           },
 
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
 
-            plugins: {
-              legend: {
-                display: false
+              position:
+                "top"
+            },
+
+            tooltip: {
+              callbacks: {
+                label: context => {
+                  return `${context.dataset.label}: ${this.formatCurrency(
+                    context.parsed.y
+                  )}`;
+                }
+              }
+            }
+          },
+
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Dia do mês"
               },
 
-              tooltip: {
-                callbacks: {
-                  label: context =>
-                    this.formatCurrency(
-                      context.parsed.y
-                    )
-                }
+              grid: {
+                display: false
               }
             },
 
-            scales: {
-              y: {
-                beginAtZero: true,
+            y: {
+              beginAtZero: true,
 
-                ticks: {
-                  callback: value =>
+              ticks: {
+                callback:
+                  value =>
                     this.formatCurrency(
                       value
                     )
-                }
               }
             }
           }
         }
-      );
-  },
+      }
+    );
+},
 
   /**
    * Atualiza o círculo de despesas.
@@ -514,69 +1473,190 @@ const UI = {
         .join("");
   },
 
-  /**
-   * Atualiza os últimos lançamentos.
-   */
-  renderRecentTransactions(activities) {
-    const container =
-      document.getElementById(
-        "ultimosLancamentos"
-      );
+ /**
+ * Renderiza os últimos lançamentos
+ * do Dashboard.
+ */
+renderRecentTransactions(activities) {
+  const container =
+    document.getElementById(
+      "ultimosLancamentos"
+    );
 
-    if (!container) {
-      return;
-    }
+  if (!container) {
+    return;
+  }
 
-    const list =
-      Array.isArray(activities)
-        ? activities
-        : [];
+  const list =
+    Array.isArray(activities)
+      ? activities
+      : [];
 
-    if (!list.length) {
-      container.innerHTML = `
-        <p class="empty-message">
-          Nenhum lançamento registrado.
-        </p>
-      `;
+  if (!list.length) {
+    container.innerHTML = `
+      <p class="empty-message">
+        Nenhum lançamento registrado.
+      </p>
+    `;
 
-      return;
-    }
+    return;
+  }
 
-    container.innerHTML =
-      list
-        .slice(0, 8)
-        .map(activity => `
-          <div class="transaction-item">
-            <div>
-              <strong>
-                ${this.escapeHTML(
-                  activity.title ||
-                  "Lançamento"
-                )}
-              </strong>
+  container.innerHTML =
+    list
+      .slice(0, 8)
+      .map(activity => {
+        const type =
+          String(
+            activity.type ||
+            activity.tipo ||
+            ""
+          ).toLowerCase();
 
-              <small>
-                ${this.formatDate(
-                  activity.date
-                )}
-              </small>
+        let typeLabel =
+          "Lançamento";
+
+        let typeClass =
+          "recent-neutral";
+
+        let icon =
+          "•";
+
+        if (
+          type.includes("receita") ||
+          type.includes("income")
+        ) {
+          typeLabel =
+            "Receita";
+
+          typeClass =
+            "recent-income";
+
+          icon = "↗";
+        } else if (
+          type.includes("gasto") ||
+          type.includes("expense")
+        ) {
+          typeLabel =
+            "Gasto";
+
+          typeClass =
+            "recent-expense";
+
+          icon = "↘";
+        } else if (
+          type.includes("poker")
+        ) {
+          typeLabel =
+            "Poker";
+
+          typeClass =
+            "recent-poker";
+
+          icon = "♠";
+        } else if (
+          type.includes("bet")
+        ) {
+          typeLabel =
+            "Bets";
+
+          typeClass =
+            "recent-bet";
+
+          icon = "⚽";
+        }
+
+        const title =
+          activity.title ||
+          activity.descricao ||
+          typeLabel;
+
+        const category =
+          activity.category ||
+          activity.categoria ||
+          activity.categoriaNome ||
+          activity.source ||
+          "";
+
+        const date =
+          activity.date ||
+          activity.data ||
+          "";
+
+        const result =
+          Number(
+            activity.result ??
+            activity.valor ??
+            activity.resultado ??
+            0
+          ) || 0;
+
+        return `
+          <div class="recent-transaction">
+
+            <div class="recent-transaction-icon ${typeClass}">
+              ${icon}
             </div>
 
-            <strong class="${
-              Number(
-                activity.result
-              ) >= 0
+            <div class="recent-transaction-info">
+
+              <div class="recent-transaction-title">
+
+                <strong>
+                  ${this.escapeHTML(
+                    title
+                  )}
+                </strong>
+
+                <span class="recent-type-badge ${typeClass}">
+                  ${typeLabel}
+                </span>
+
+              </div>
+
+              <div class="recent-transaction-meta">
+
+                ${
+                  category
+                    ? `
+                      <span>
+                        ${this.escapeHTML(
+                          category
+                        )}
+                      </span>
+                    `
+                    : ""
+                }
+
+                <span>
+                  ${this.formatDate(
+                    date
+                  )}
+                </span>
+
+              </div>
+
+            </div>
+
+            <strong class="recent-transaction-value ${
+              result >= 0
                 ? "positive"
                 : "negative"
             }">
-              ${this.formatCurrency(
-                activity.result
+              ${
+                result > 0
+                  ? "+"
+                  : ""
+              }${this.formatCurrency(
+                result
               )}
             </strong>
+
           </div>
-        `)
-        .join("");
-  },
+        `;
+      })
+      .join("");
+},
 
   /**
    * Procura um método disponível em um módulo.
@@ -636,7 +1716,7 @@ const UI = {
                 ).value
               ),
 
-            categoria:
+            categoriaId:
               document.getElementById(
                 "categoriaReceita"
               ).value,
@@ -673,6 +1753,8 @@ const UI = {
           );
 
           this.refreshAll();
+          this.renderIncomesPage();
+        
         } catch (error) {
           console.error(error);
 
@@ -686,80 +1768,995 @@ const UI = {
     );
   },
 
-  /**
-   * Formulário de gastos.
-   */
-  bindExpenseForm() {
-    const form =
-      document.getElementById(
-        "formGasto"
+ /**
+ * Atualiza a página de Receitas.
+ */
+renderIncomesPage() {
+  try {
+    const incomes =
+      Expenses.getIncomes();
+
+    this.renderIncomesList(
+      incomes
+    );
+  } catch (error) {
+    console.error(
+      "Erro ao atualizar a página de Receitas:",
+      error
+    );
+
+    this.showMessage(
+      "Não foi possível carregar as receitas.",
+      "error"
+    );
+  }
+},
+
+/**
+ * Renderiza a lista de receitas.
+ */
+renderIncomesList(incomes) {
+  const container =
+    document.getElementById(
+      "listaReceitas"
+    );
+
+  if (!container) {
+    return;
+  }
+
+  const list =
+    Array.isArray(incomes)
+      ? incomes
+      : [];
+
+  if (!list.length) {
+    container.innerHTML = `
+      <p class="empty-message">
+        Nenhuma receita registrada.
+      </p>
+    `;
+
+    return;
+  }
+
+  container.innerHTML =
+    list
+      .map(income => `
+        <div class="list-item">
+          <div class="list-item-content">
+            <strong>
+              ${this.escapeHTML(
+                income.descricao ||
+                "Receita"
+              )}
+            </strong>
+
+            <small>
+              ${this.escapeHTML(
+                income.categoriaNome ||
+                "Sem categoria"
+              )}
+              •
+              ${this.formatDate(
+                income.data
+              )}
+            </small>
+          </div>
+
+          <div class="list-item-actions">
+            <strong class="positive">
+              +${this.formatCurrency(
+                income.valor
+              )}
+            </strong>
+
+            <button
+              type="button"
+              class="btn-delete-income"
+              data-income-id="${this.escapeHTML(
+                income.id
+              )}"
+            >
+              Excluir
+            </button>
+          </div>
+        </div>
+      `)
+      .join("");
+
+  container
+    .querySelectorAll(
+      ".btn-delete-income"
+    )
+    .forEach(button => {
+      button.addEventListener(
+        "click",
+        () => {
+          const incomeId =
+            button.dataset.incomeId;
+
+          const confirmed =
+            window.confirm(
+              "Deseja realmente excluir esta receita?"
+            );
+
+          if (!confirmed) {
+            return;
+          }
+
+          try {
+            const result =
+              Expenses.delete(
+                incomeId,
+                "receita"
+              );
+
+            if (!result.success) {
+              throw new Error(
+                result.error ||
+                "Receita não encontrada."
+              );
+            }
+
+            this.showMessage(
+              "Receita excluída com sucesso."
+            );
+
+            this.refreshAll();
+            this.renderIncomesPage();
+          } catch (error) {
+            console.error(error);
+
+            this.showMessage(
+              error.message ||
+              "Não foi possível excluir a receita.",
+              "error"
+            );
+          }
+        }
       );
+    });
+},
 
-    if (!form) {
-      return;
-    }
+ /**
+ * Formulário de gastos.
+ */
+bindExpenseForm() {
+  const form =
+    document.getElementById(
+      "formGasto"
+    );
 
-    form.addEventListener(
-      "submit",
-      event => {
-        event.preventDefault();
+  if (!form) {
+    return;
+  }
 
-        try {
-          const payload = {
-            valor:
-              Number(
-                document.getElementById(
-                  "valorGasto"
-                ).value
-              ),
+  form.addEventListener(
+    "submit",
+    event => {
+      event.preventDefault();
 
-            categoria:
+      try {
+        const payload = {
+          valor:
+            Number(
               document.getElementById(
-                "categoriaGasto"
-              ).value,
-
-            descricao:
-              document.getElementById(
-                "descricaoGasto"
-              ).value.trim(),
-
-            data:
-              document.getElementById(
-                "dataGasto"
+                "valorGasto"
               ).value
-          };
+            ),
 
-          this.callModuleMethod(
-            Expenses,
-            [
-              "createExpense",
-              "addExpense",
-              "createGasto"
-            ],
-            payload
+          categoriaId:
+            document.getElementById(
+              "categoriaGasto"
+            ).value,
+
+          descricao:
+            document.getElementById(
+              "descricaoGasto"
+            ).value.trim(),
+
+          data:
+            document.getElementById(
+              "dataGasto"
+            ).value
+        };
+
+        if (this.editingExpenseId) {
+          Expenses.update(
+            this.editingExpenseId,
+            payload,
+            "gasto"
           );
 
-          form.reset();
-
-          this.setDefaultDates();
+          this.showMessage(
+            "Gasto atualizado com sucesso."
+          );
+        } else {
+          Expenses.createExpense(
+            payload
+          );
 
           this.showMessage(
             "Gasto salvo com sucesso."
           );
+        }
 
-          this.refreshAll();
-        } catch (error) {
-          console.error(error);
+        this.resetExpenseForm();
 
-          this.showMessage(
-            error.message ||
-            "Não foi possível salvar o gasto.",
-            "error"
+        this.refreshAll();
+        this.renderExpensesPage();
+      } catch (error) {
+        console.error(error);
+
+        this.showMessage(
+          error.message ||
+          "Não foi possível salvar o gasto.",
+          "error"
+        );
+      }
+    }
+  );
+},
+
+/**
+ * Inicia a edição de um gasto.
+ */
+startExpenseEdit(expenseId) {
+  const expense =
+    Expenses.findById(
+      expenseId,
+      "gasto"
+    );
+
+  if (!expense) {
+    this.showMessage(
+      "Gasto não encontrado.",
+      "error"
+    );
+
+    return;
+  }
+
+  this.editingExpenseId =
+    expense.id;
+
+  document.getElementById(
+    "valorGasto"
+  ).value =
+    expense.valor;
+
+  document.getElementById(
+    "categoriaGasto"
+  ).value =
+    expense.categoriaId;
+
+  document.getElementById(
+    "descricaoGasto"
+  ).value =
+    expense.descricao;
+
+  document.getElementById(
+    "dataGasto"
+  ).value =
+    expense.data;
+
+  const form =
+    document.getElementById(
+      "formGasto"
+    );
+
+  const submitButton =
+    form?.querySelector(
+      'button[type="submit"]'
+    );
+
+  if (submitButton) {
+    submitButton.textContent =
+      "Atualizar gasto";
+  }
+
+  this.createCancelExpenseButton();
+
+  form?.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+},
+
+/**
+ * Cria o botão cancelar edição.
+ */
+createCancelExpenseButton() {
+  const form =
+    document.getElementById(
+      "formGasto"
+    );
+
+  if (
+    !form ||
+    document.getElementById(
+      "cancelarEdicaoGasto"
+    )
+  ) {
+    return;
+  }
+
+  const button =
+    document.createElement(
+      "button"
+    );
+
+  button.type = "button";
+
+  button.id =
+    "cancelarEdicaoGasto";
+
+  button.className =
+    "btn-cancel-edit";
+
+  button.textContent =
+    "Cancelar edição";
+
+  button.addEventListener(
+    "click",
+    () => {
+      this.resetExpenseForm();
+    }
+  );
+
+  form.appendChild(button);
+},
+
+/**
+ * Volta o formulário ao modo normal.
+ */
+resetExpenseForm() {
+  const form =
+    document.getElementById(
+      "formGasto"
+    );
+
+  this.editingExpenseId =
+    null;
+
+  form?.reset();
+
+  this.setDefaultDates();
+
+  const submitButton =
+    form?.querySelector(
+      'button[type="submit"]'
+    );
+
+  if (submitButton) {
+    submitButton.textContent =
+      "Salvar gasto";
+  }
+
+  document
+    .getElementById(
+      "cancelarEdicaoGasto"
+    )
+    ?.remove();
+},
+
+/**
+ * Atualiza a página de Gastos.
+ */
+renderExpensesPage() {
+  try {
+    const expenses =
+      Expenses.getExpenses();
+
+    this.renderExpensesList(
+      expenses
+    );
+  } catch (error) {
+    console.error(
+      "Erro ao atualizar a página de Gastos:",
+      error
+    );
+
+    this.showMessage(
+      "Não foi possível carregar os gastos.",
+      "error"
+    );
+  }
+},
+
+/**
+ * Renderiza a lista de gastos.
+ */
+renderExpensesList(expenses) {
+  const container =
+    document.getElementById(
+      "listaGastos"
+    );
+
+  if (!container) {
+    return;
+  }
+
+  const list =
+    Array.isArray(expenses)
+      ? expenses
+      : [];
+
+  if (!list.length) {
+    container.innerHTML = `
+      <p class="empty-message">
+        Nenhum gasto registrado.
+      </p>
+    `;
+
+    return;
+  }
+
+  container.innerHTML =
+    list
+      .map(expense => `
+        <div class="list-item">
+          <div class="list-item-content">
+            <strong>
+              ${this.escapeHTML(
+                expense.descricao ||
+                "Gasto"
+              )}
+            </strong>
+
+            <small>
+              ${this.escapeHTML(
+                expense.categoriaNome ||
+                "Sem categoria"
+              )}
+              •
+              ${this.formatDate(
+                expense.data
+              )}
+            </small>
+          </div>
+
+          <div class="list-item-actions">
+            <strong class="negative">
+              -${this.formatCurrency(
+                expense.valor
+              )}
+            </strong>
+
+            <button
+              type="button"
+              class="btn-edit-expense"
+              data-expense-id="${this.escapeHTML(
+                expense.id
+              )}"
+            >
+              Editar
+            </button>
+
+            <button
+              type="button"
+              class="btn-delete-expense"
+              data-expense-id="${this.escapeHTML(
+                expense.id
+              )}"
+            >
+              Excluir
+            </button>
+          </div>
+        </div>
+      `)
+      .join("");
+
+  container
+    .querySelectorAll(
+      ".btn-edit-expense"
+    )
+    .forEach(button => {
+      button.addEventListener(
+        "click",
+        () => {
+          this.startExpenseEdit(
+            button.dataset.expenseId
+          );
+        }
+      );
+    });
+
+  container
+    .querySelectorAll(
+      ".btn-delete-expense"
+    )
+    .forEach(button => {
+      button.addEventListener(
+        "click",
+        () => {
+          const expenseId =
+            button.dataset.expenseId;
+
+          const confirmed =
+            window.confirm(
+              "Deseja realmente excluir este gasto?"
+            );
+
+          if (!confirmed) {
+            return;
+          }
+
+          try {
+            const result =
+              Expenses.delete(
+                expenseId,
+                "gasto"
+              );
+
+            if (!result.success) {
+              throw new Error(
+                result.error ||
+                "Gasto não encontrado."
+              );
+            }
+
+            if (
+              this.editingExpenseId ===
+              expenseId
+            ) {
+              this.resetExpenseForm();
+            }
+
+            this.showMessage(
+              "Gasto excluído com sucesso."
+            );
+
+            this.refreshAll();
+          } catch (error) {
+            console.error(error);
+
+            this.showMessage(
+              error.message ||
+              "Não foi possível excluir o gasto.",
+              "error"
+            );
+          }
+        }
+      );
+    });
+},
+
+bindLimitsForm() {
+  const form =
+    document.getElementById(
+      "formLimites"
+    );
+
+  if (!form) {
+    return;
+  }
+
+  form.addEventListener(
+    "submit",
+    event => {
+      event.preventDefault();
+
+      try {
+        const getValue = id => {
+          const input =
+            document.getElementById(id);
+
+          const value =
+            Number(input?.value || 0);
+
+          if (
+            !Number.isFinite(value) ||
+            value < 0
+          ) {
+            throw new Error(
+              "Os limites devem ser números maiores ou iguais a zero."
+            );
+          }
+
+          return value;
+        };
+
+        const limits =
+          Storage.getLimites() || {};
+
+        const goals =
+          Storage.getMetas() || {};
+
+        limits.mensalGeral =
+          getValue("limiteMensal");
+
+        limits.poker =
+          getValue("limitePoker");
+
+        limits.bets =
+          getValue("limiteBets");
+
+        goals.economiaMensal =
+          getValue("metaEconomia");
+
+        Storage.updateSection(
+          "limites",
+          limits
+        );
+
+        Storage.updateSection(
+          "metas",
+          goals
+        );
+
+        Categories.setCategoryLimit(
+          "alimentacao",
+          getValue(
+            "limiteAlimentacao"
+          )
+        );
+
+        Categories.setCategoryLimit(
+          "transporte",
+          getValue(
+            "limiteTransporte"
+          )
+        );
+
+        Categories.setCategoryLimit(
+          "lazer",
+          getValue(
+            "limiteLazer"
+          )
+        );
+
+        this.showMessage(
+          "Limites salvos com sucesso."
+        );
+
+        this.renderLimitsPage();
+      } catch (error) {
+        console.error(error);
+
+        this.showMessage(
+          error.message ||
+          "Não foi possível salvar os limites.",
+          "error"
+        );
+      }
+    }
+  );
+},
+
+/**
+ * Atualiza os campos, valores e barras da página Limites.
+ */
+renderLimitsPage() {
+  try {
+    const limits =
+      Storage.getLimites() || {};
+
+    const goals =
+      Storage.getMetas() || {};
+
+    const currentDate =
+      new Date();
+
+    const currentMonth =
+      currentDate.getMonth();
+
+    const currentYear =
+      currentDate.getFullYear();
+
+    /**
+     * Preenche um campo numérico.
+     */
+    const setInputValue = (
+      id,
+      value
+    ) => {
+      const input =
+        document.getElementById(id);
+
+      if (input) {
+        input.value =
+          Number(value) || 0;
+      }
+    };
+
+    /**
+     * Atualiza um cartão visual de limite.
+     */
+    const updateLimitCard = ({
+      status,
+      spentId,
+      limitId,
+      percentageId,
+      barId
+    }) => {
+      const used =
+        Number(status?.utilizado) || 0;
+
+      const limit =
+        Number(status?.limite) || 0;
+
+      const percentage =
+        Number(status?.percentual) || 0;
+
+      const visualPercentage =
+        Math.min(
+          Math.max(percentage, 0),
+          100
+        );
+
+      this.setCurrency(
+        spentId,
+        used
+      );
+
+      this.setCurrency(
+        limitId,
+        limit
+      );
+
+      this.setText(
+        percentageId,
+        `${Math.round(percentage)}%`
+      );
+
+      const bar =
+        document.getElementById(
+          barId
+        );
+
+      const percentageElement =
+        document.getElementById(
+          percentageId
+        );
+
+      if (bar) {
+        bar.style.width =
+          `${visualPercentage}%`;
+
+        bar.classList.remove(
+          "limit-normal",
+          "limit-warning",
+          "limit-danger",
+          "limit-empty"
+        );
+
+        if (limit <= 0) {
+          bar.classList.add(
+            "limit-empty"
+          );
+        } else if (percentage > 100) {
+          bar.classList.add(
+            "limit-danger"
+          );
+        } else if (percentage >= 80) {
+          bar.classList.add(
+            "limit-warning"
+          );
+        } else {
+          bar.classList.add(
+            "limit-normal"
           );
         }
       }
+
+      if (percentageElement) {
+        percentageElement.classList.remove(
+          "limit-text-normal",
+          "limit-text-warning",
+          "limit-text-danger",
+          "limit-text-empty"
+        );
+
+        if (limit <= 0) {
+          percentageElement.classList.add(
+            "limit-text-empty"
+          );
+        } else if (percentage > 100) {
+          percentageElement.classList.add(
+            "limit-text-danger"
+          );
+        } else if (percentage >= 80) {
+          percentageElement.classList.add(
+            "limit-text-warning"
+          );
+        } else {
+          percentageElement.classList.add(
+            "limit-text-normal"
+          );
+        }
+      }
+    };
+
+    /*
+     * Preenche o formulário com os valores salvos.
+     */
+
+    setInputValue(
+      "limiteMensal",
+      limits.mensalGeral
     );
-  },
+
+    setInputValue(
+      "metaEconomia",
+      goals.economiaMensal
+    );
+
+    setInputValue(
+      "limiteAlimentacao",
+      Categories.getCategoryLimit(
+        "alimentacao"
+      )
+    );
+
+    setInputValue(
+      "limiteTransporte",
+      Categories.getCategoryLimit(
+        "transporte"
+      )
+    );
+
+    setInputValue(
+      "limiteLazer",
+      Categories.getCategoryLimit(
+        "lazer"
+      )
+    );
+
+    setInputValue(
+      "limitePoker",
+      limits.poker
+    );
+
+    setInputValue(
+      "limiteBets",
+      limits.bets
+    );
+
+    /*
+     * Calcula os limites das categorias pessoais.
+     */
+
+    const foodStatus =
+      Expenses.getCategoryLimitStatus(
+        "alimentacao",
+        currentMonth,
+        currentYear
+      );
+
+    const transportStatus =
+      Expenses.getCategoryLimitStatus(
+        "transporte",
+        currentMonth,
+        currentYear
+      );
+
+    const leisureStatus =
+      Expenses.getCategoryLimitStatus(
+        "lazer",
+        currentMonth,
+        currentYear
+      );
+
+    /*
+     * Calcula o valor investido em Poker no mês.
+     */
+
+    const pokerSessions =
+      Poker.getSessionsByMonth(
+        currentMonth,
+        currentYear
+      );
+
+    const pokerUsed =
+      Poker.getTotalBuyIns(
+        pokerSessions
+      );
+
+    const pokerStatus =
+      Expenses.buildLimitStatus(
+        limits.poker,
+        pokerUsed
+      );
+
+    /*
+     * Calcula o valor apostado em Bets no mês.
+     */
+
+    const monthlyBets =
+      Bets.getBetsByMonth(
+        currentMonth,
+        currentYear
+      );
+
+    const betsUsed =
+      Bets.getTotalInvestment(
+        monthlyBets
+      );
+
+    const betsStatus =
+      Expenses.buildLimitStatus(
+        limits.bets,
+        betsUsed
+      );
+
+    /*
+     * Atualiza os cartões.
+     */
+
+    updateLimitCard({
+      status: foodStatus,
+      spentId:
+        "gastoAlimentacao",
+      limitId:
+        "totalLimiteAlimentacao",
+      percentageId:
+        "percentualAlimentacao",
+      barId:
+        "barraAlimentacao"
+    });
+
+    updateLimitCard({
+      status: transportStatus,
+      spentId:
+        "gastoTransporte",
+      limitId:
+        "totalLimiteTransporte",
+      percentageId:
+        "percentualTransporte",
+      barId:
+        "barraTransporte"
+    });
+
+    updateLimitCard({
+      status: leisureStatus,
+      spentId:
+        "gastoLazer",
+      limitId:
+        "totalLimiteLazer",
+      percentageId:
+        "percentualLazer",
+      barId:
+        "barraLazer"
+    });
+
+    updateLimitCard({
+      status: pokerStatus,
+      spentId:
+        "gastoPoker",
+      limitId:
+        "totalLimitePoker",
+      percentageId:
+        "percentualPoker",
+      barId:
+        "barraPoker"
+    });
+
+    updateLimitCard({
+      status: betsStatus,
+      spentId:
+        "gastoBets",
+      limitId:
+        "totalLimiteBets",
+      percentageId:
+        "percentualBets",
+      barId:
+        "barraBets"
+    });
+  } catch (error) {
+    console.error(
+      "Erro ao atualizar a página Limites:",
+      error
+    );
+
+    this.showMessage(
+      "Não foi possível atualizar os limites.",
+      "error"
+    );
+  }
+},
+
 
   /**
    * Formulário de Poker.
@@ -1066,60 +3063,61 @@ const UI = {
   },
 
   /**
-   * Renderiza a lista de sessões de Poker.
-   */
-  renderPokerList(sessions) {
-    const container =
-      document.getElementById(
-        "listaPoker"
-      );
+ * Renderiza a lista de sessões de Poker.
+ */
+renderPokerList(sessions) {
+  const container =
+    document.getElementById(
+      "listaPoker"
+    );
 
-    if (!container) {
-      return;
-    }
+  if (!container) {
+    return;
+  }
 
-    const list =
-      Array.isArray(sessions)
-        ? sessions
-        : [];
+  const list =
+    Array.isArray(sessions)
+      ? sessions
+      : [];
 
-    if (!list.length) {
-      container.innerHTML = `
-        <p class="empty-message">
-          Nenhuma sessão registrada.
-        </p>
-      `;
+  if (!list.length) {
+    container.innerHTML = `
+      <p class="empty-message">
+        Nenhuma sessão registrada.
+      </p>
+    `;
 
-      return;
-    }
+    return;
+  }
 
-    container.innerHTML =
-      list
-        .map(session => `
-          <div class="list-item">
-            <div>
-              <strong>
-                ${this.escapeHTML(
-                  session.descricao ||
-                  "Sessão de Poker"
-                )}
-              </strong>
+  container.innerHTML =
+    list
+      .map(session => `
+        <div class="list-item">
+          <div class="list-item-content">
+            <strong>
+              ${this.escapeHTML(
+                session.descricao ||
+                "Sessão de Poker"
+              )}
+            </strong>
 
-              <small>
-                ${this.formatDate(
-                  session.data
-                )}
+            <small>
+              ${this.formatDate(
+                session.data
+              )}
 
-                ${
-                  session.local
-                    ? ` • ${this.escapeHTML(
-                        session.local
-                      )}`
-                    : ""
-                }
-              </small>
-            </div>
+              ${
+                session.local
+                  ? ` • ${this.escapeHTML(
+                      session.local
+                    )}`
+                  : ""
+              }
+            </small>
+          </div>
 
+          <div class="list-item-actions">
             <strong class="${
               Number(
                 session.resultado
@@ -1131,10 +3129,72 @@ const UI = {
                 session.resultado
               )}
             </strong>
+
+            <button
+              type="button"
+              class="btn-delete-poker"
+              data-session-id="${this.escapeHTML(
+                session.id
+              )}"
+            >
+              Excluir
+            </button>
           </div>
-        `)
-        .join("");
-  },
+        </div>
+      `)
+      .join("");
+
+  container
+    .querySelectorAll(
+      ".btn-delete-poker"
+    )
+    .forEach(button => {
+      button.addEventListener(
+        "click",
+        () => {
+          const sessionId =
+            button.dataset.sessionId;
+
+          const confirmed =
+            window.confirm(
+              "Deseja realmente excluir esta sessão de Poker?"
+            );
+
+          if (!confirmed) {
+            return;
+          }
+
+          try {
+            const result =
+              Poker.deleteSession(
+                sessionId
+              );
+
+            if (!result.success) {
+              throw new Error(
+                result.error ||
+                "Sessão de Poker não encontrada."
+              );
+            }
+
+            this.showMessage(
+              "Sessão de Poker excluída com sucesso."
+            );
+
+            this.refreshAll();
+          } catch (error) {
+            console.error(error);
+
+            this.showMessage(
+              error.message ||
+              "Não foi possível excluir a sessão.",
+              "error"
+            );
+          }
+        }
+      );
+    });
+},
 
   /**
    * Atualiza a página Bets.
@@ -1175,60 +3235,61 @@ const UI = {
   },
 
   /**
-   * Renderiza a lista de apostas.
-   */
-  renderBetsList(bets) {
-    const container =
-      document.getElementById(
-        "listaBets"
-      );
+ * Renderiza a lista de apostas.
+ */
+renderBetsList(bets) {
+  const container =
+    document.getElementById(
+      "listaBets"
+    );
 
-    if (!container) {
-      return;
-    }
+  if (!container) {
+    return;
+  }
 
-    const list =
-      Array.isArray(bets)
-        ? bets
-        : [];
+  const list =
+    Array.isArray(bets)
+      ? bets
+      : [];
 
-    if (!list.length) {
-      container.innerHTML = `
-        <p class="empty-message">
-          Nenhuma aposta registrada.
-        </p>
-      `;
+  if (!list.length) {
+    container.innerHTML = `
+      <p class="empty-message">
+        Nenhuma aposta registrada.
+      </p>
+    `;
 
-      return;
-    }
+    return;
+  }
 
-    container.innerHTML =
-      list
-        .map(bet => `
-          <div class="list-item">
-            <div>
-              <strong>
-                ${this.escapeHTML(
-                  bet.descricao ||
-                  "Aposta"
-                )}
-              </strong>
+  container.innerHTML =
+    list
+      .map(bet => `
+        <div class="list-item">
+          <div class="list-item-content">
+            <strong>
+              ${this.escapeHTML(
+                bet.descricao ||
+                "Aposta"
+              )}
+            </strong>
 
-              <small>
-                ${this.formatDate(
-                  bet.data
-                )}
+            <small>
+              ${this.formatDate(
+                bet.data
+              )}
 
-                ${
-                  bet.observacao
-                    ? ` • ${this.escapeHTML(
-                        bet.observacao
-                      )}`
-                    : ""
-                }
-              </small>
-            </div>
+              ${
+                bet.observacao
+                  ? ` • ${this.escapeHTML(
+                      bet.observacao
+                    )}`
+                  : ""
+              }
+            </small>
+          </div>
 
+          <div class="list-item-actions">
             <strong class="${
               Number(
                 bet.resultado
@@ -1240,26 +3301,102 @@ const UI = {
                 bet.resultado
               )}
             </strong>
-          </div>
-        `)
-        .join("");
-  },
 
-  /**
-   * Configura o filtro do Dashboard.
-   */
-  bindDashboardFilter() {
-    document
-      .getElementById(
-        "filtroAnoDashboard"
-      )
-      ?.addEventListener(
-        "change",
+            <button
+              type="button"
+              class="btn-delete-bet"
+              data-bet-id="${this.escapeHTML(
+                bet.id
+              )}"
+            >
+              Excluir
+            </button>
+          </div>
+        </div>
+      `)
+      .join("");
+
+  container
+    .querySelectorAll(
+      ".btn-delete-bet"
+    )
+    .forEach(button => {
+      button.addEventListener(
+        "click",
         () => {
-          this.renderDashboard();
+          const betId =
+            button.dataset.betId;
+
+          const confirmed =
+            window.confirm(
+              "Deseja realmente excluir esta aposta?"
+            );
+
+          if (!confirmed) {
+            return;
+          }
+
+          try {
+            const result =
+              Bets.deleteBet(
+                betId
+              );
+
+            if (!result.success) {
+              throw new Error(
+                result.error ||
+                "Aposta não encontrada."
+              );
+            }
+
+            this.showMessage(
+              "Aposta excluída com sucesso."
+            );
+
+            this.refreshAll();
+          } catch (error) {
+            console.error(error);
+
+            this.showMessage(
+              error.message ||
+              "Não foi possível excluir a aposta.",
+              "error"
+            );
+          }
         }
       );
-  },
+    });
+},
+
+  /**
+ * Configura os filtros de mês e ano
+ * do Dashboard.
+ */
+bindDashboardFilter() {
+  const monthFilter =
+    document.getElementById(
+      "filtroMesDashboard"
+    );
+
+  const yearFilter =
+    document.getElementById(
+      "filtroAnoDashboard"
+    );
+
+  const updateDashboard = () => {
+    this.renderDashboard();
+  };
+
+  monthFilter?.addEventListener(
+    "change",
+    updateDashboard
+  );
+
+  yearFilter?.addEventListener(
+    "change",
+    updateDashboard
+  );
+},
 
   /**
    * Configura exportação e limpeza de dados.
@@ -1375,20 +3512,118 @@ const UI = {
         }
       );
 
-    document
-      .getElementById(
-        "importar"
-      )
-      ?.addEventListener(
-        "click",
-        () => {
-          this.showMessage(
-            "A importação será adicionada posteriormente.",
-            "info"
-          );
-        }
+   const importButton =
+  document.getElementById(
+    "importar"
+  );
+
+const importInput =
+  document.getElementById(
+    "arquivoImportacao"
+  );
+
+importButton?.addEventListener(
+  "click",
+  () => {
+    importInput?.click();
+  }
+);
+
+importInput?.addEventListener(
+  "change",
+  event => {
+    const file =
+      event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    const confirmed =
+      window.confirm(
+        "A importação substituirá todos os dados atuais. Deseja continuar?"
       );
-  },
+
+    if (!confirmed) {
+      event.target.value = "";
+      return;
+    }
+
+    const reader =
+      new FileReader();
+
+    reader.addEventListener(
+      "load",
+      () => {
+        try {
+          const content =
+            String(
+              reader.result || ""
+            );
+
+          const result =
+            Storage.importDatabase(
+              content
+            );
+
+          if (!result.success) {
+            throw new Error(
+              result.error ||
+              "O backup não pôde ser importado."
+            );
+          }
+
+          Categories.initialize();
+          Expenses.initialize();
+          Poker.initialize();
+          Bets.initialize();
+
+          this.populateCategories();
+          this.setDefaultDates();
+          this.refreshAll();
+
+          this.navigate(
+            "dashboard"
+          );
+
+          this.showMessage(
+            "Backup importado com sucesso."
+          );
+        } catch (error) {
+          console.error(
+            "Erro ao importar backup:",
+            error
+          );
+
+          this.showMessage(
+            error.message ||
+            "Não foi possível importar o backup.",
+            "error"
+          );
+        } finally {
+          importInput.value = "";
+        }
+      }
+    );
+
+    reader.addEventListener(
+      "error",
+      () => {
+        this.showMessage(
+          "Não foi possível ler o arquivo selecionado.",
+          "error"
+        );
+
+        importInput.value = "";
+      }
+    );
+
+    reader.readAsText(
+      file
+    );
+    }
+);
+},
 
   /**
    * Exibe uma mensagem temporária.
@@ -1479,6 +3714,19 @@ const UI = {
         this.renderDashboard();
         break;
 
+
+      case "receitas":
+        this.renderIncomesPage();
+        break;
+
+      case "gastos":
+        this.renderExpensesPage();
+        break;
+
+      case "limites":
+        this.renderLimitsPage();
+        break;
+      
       case "poker":
         this.renderPokerPage();
         break;
@@ -1497,6 +3745,9 @@ const UI = {
    */
   refreshAll() {
     this.renderDashboard();
+    this.renderIncomesPage();
+    this.renderExpensesPage();
+    this.renderLimitsPage();
     this.renderPokerPage();
     this.renderBetsPage();
   },
@@ -1508,13 +3759,28 @@ const UI = {
     this.bindNavigation();
     this.bindDashboardFilter();
 
+    this.populateCategories();
+
     this.bindIncomeForm();
     this.bindExpenseForm();
+    this.bindLimitsForm();
     this.bindPokerForm();
     this.bindBetForm();
 
     this.bindSettings();
     this.setDefaultDates();
+
+    const monthFilter =
+  document.getElementById(
+    "filtroMesDashboard"
+  );
+
+if (monthFilter) {
+  monthFilter.value =
+    String(
+      new Date().getMonth()
+    );
+}
 
     this.navigate(
       "dashboard"
