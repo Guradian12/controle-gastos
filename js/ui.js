@@ -3705,6 +3705,140 @@ importInput?.addEventListener(
     }, 3000);
   },
 
+  
+/**
+ * Renderiza o Dashboard do Mercado Livre.
+ */
+renderMLPage() {
+  try {
+    const container = document.getElementById("mlDashboard");
+
+    if (!container) return;
+
+    const today = new Date();
+
+    const month = today.getMonth();
+    const year = today.getFullYear();
+
+    const data = ML.getDashboardData(month, year);
+
+    const cards = [
+      {
+        label: "Faturamento",
+        value: data.faturamento,
+        className: "neutral"
+      },
+      {
+        label: "Custos totais",
+        value: data.investimentoTotal,
+        className: "negative"
+      },
+      {
+        label: "Lucro líquido",
+        value: data.lucroLiquido,
+        className: data.lucroLiquido >= 0 ? "positive" : "negative"
+      },
+      {
+        label: "ROI",
+        value: `${data.roi.toFixed(2)}%`,
+        className: data.roi >= 0 ? "positive" : "negative",
+        isPercentage: true
+      }
+    ];
+
+    container.innerHTML = `
+      <div class="ml-stats-grid">
+        ${cards.map(card => `
+          <div class="ml-stat-card">
+            <span class="ml-stat-label">
+              ${card.label}
+            </span>
+
+            <strong class="${card.className}">
+              ${card.isPercentage
+                ? card.value
+                : this.formatCurrency(card.value)}
+            </strong>
+          </div>
+        `).join("")}
+      </div>
+    `;
+
+  } catch (error) {
+    console.error("Erro ao carregar Dashboard do Mercado Livre:", error);
+
+    this.showMessage(
+      "Não foi possível carregar o Mercado Livre.",
+      "error"
+    );
+  }
+},
+
+/**
+ * Renderiza o Dashboard do Miwra.
+ */
+renderMiwraPage() {
+  try {
+    const container = document.getElementById("miwraDashboard");
+
+    if (!container) return;
+
+    const today = new Date();
+
+    const month = today.getMonth();
+    const year = today.getFullYear();
+
+    const data = Miwra.getDashboardData(month, year);
+
+    const cards = [
+      {
+        label: "Comissões recebidas",
+        value: data.comissoesRecebidas,
+        className: "positive"
+      },
+      {
+        label: "Comissões pendentes",
+        value: data.comissoesPendentes,
+        className: "neutral"
+      },
+      {
+        label: "Custos totais",
+        value: data.custosFerramentas + data.custosOperacionais,
+        className: "negative"
+      },
+      {
+        label: "Lucro líquido",
+        value: data.lucroLiquido,
+        className: data.lucroLiquido >= 0 ? "positive" : "negative"
+      }
+    ];
+
+    container.innerHTML = `
+      <div class="miwra-stats-grid">
+        ${cards.map(card => `
+          <div class="miwra-stat-card">
+            <span class="miwra-stat-label">
+              ${card.label}
+            </span>
+
+            <strong class="${card.className}">
+              ${this.formatCurrency(card.value)}
+            </strong>
+          </div>
+        `).join("")}
+      </div>
+    `;
+
+  } catch (error) {
+    console.error("Erro ao carregar Dashboard do Miwra:", error);
+
+    this.showMessage(
+      "Não foi possível carregar o Miwra.",
+      "error"
+    );
+  }
+},
+
   /**
    * Atualiza a página selecionada.
    */
@@ -3735,17 +3869,12 @@ importInput?.addEventListener(
         this.renderBetsPage();
         break;
 
-
       case "mercadolivre":
-        if (typeof ML !== "undefined") {
-          ML.render();
-        }
+        this.renderMLPage();
         break;
 
       case "miwra":
-        if (typeof Miwra !== "undefined") {
-          Miwra.render();
-        }
+        this.renderMiwraPage();
         break;
   
       default:
