@@ -2429,3 +2429,218 @@ form > button:hover,
     border-radius: 13px;
   }
 }
+
+/* ==========================================
+   MERCADO LIVRE — INTERFACE REFINADA
+   ========================================== */
+
+#mercadolivre {
+  width: 100%;
+}
+
+#mlDashboard {
+  margin-bottom: 22px;
+}
+
+.ml-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 15px;
+  margin-bottom: 22px;
+}
+
+.ml-stat-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  min-width: 0;
+  padding: 21px;
+
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.025),
+    transparent
+  ), #101015;
+
+  border: 1px solid var(--border);
+  border-radius: 15px;
+
+  box-shadow: var(--shadow-soft);
+
+  transition: 0.2s ease;
+}
+
+.ml-stat-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
+}
+
+.ml-stat-label {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ml-stat-card strong {
+  font-size: 23px;
+  font-weight: 750;
+  letter-spacing: -0.04em;
+}
+
+.ml-section {
+  padding: 24px;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 17px;
+
+  box-shadow: var(--shadow-soft);
+}
+
+.ml-section h2 {
+  margin-bottom: 7px;
+  color: #ffffff;
+  font-size: 19px;
+  font-weight: 720;
+}
+
+.ml-section > p {
+  margin-bottom: 22px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+/* Formulário de vendas */
+
+#formML {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  gap: 18px;
+}
+
+#formML .form-group {
+  gap: 9px;
+}
+
+#formML .form-group label {
+  color: #c2c2ca;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+#formML input,
+#formML select,
+#formML textarea {
+  width: 100%;
+  min-width: 0;
+
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 10px;
+
+  background: #15151b;
+  color: #f5f5f7;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+#formML input,
+#formML select {
+  height: 46px;
+  padding: 0 13px;
+}
+
+#formML textarea {
+  min-height: 105px;
+  padding: 13px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+#formML input::placeholder,
+#formML textarea::placeholder {
+  color: #686873;
+}
+
+#formML input:focus,
+#formML select:focus,
+#formML textarea:focus {
+  outline: none;
+  border-color: var(--wine);
+  background: #19151a;
+  box-shadow: 0 0 0 3px var(--wine-glow);
+}
+
+#formML input[type="date"] {
+  color-scheme: dark;
+}
+
+#formML > button {
+  min-height: 46px;
+  align-self: end;
+  padding: 0 22px;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: linear-gradient(
+    135deg,
+    #b71944,
+    #80132f
+  );
+
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+
+  box-shadow: 0 7px 18px rgba(190, 18, 60, 0.16);
+
+  transition: 0.2s ease;
+}
+
+#formML > button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+  box-shadow: 0 10px 22px rgba(190, 18, 60, 0.24);
+}
+
+#formML > button:active {
+  transform: translateY(0);
+}
+
+/* Responsividade */
+
+@media (max-width: 1000px) {
+  .ml-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .ml-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ml-section {
+    padding: 17px;
+  }
+
+  #formML {
+    grid-template-columns: 1fr;
+  }
+
+  #formML > button {
+    width: 100%;
+  }
+}
