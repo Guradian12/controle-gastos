@@ -173,7 +173,17 @@ const Storage = {
         apostas: []
       },
 
-      transferencias: [],
+      ml: {
+        vendas: [],
+        custos: []
+      },
+
+      miwra: {
+        comissoes: [],
+        custos: []
+},
+     
+transferencias: [],
 
       configuracoes: {
         moeda: "BRL",
@@ -551,6 +561,17 @@ const Storage = {
         ...defaultDatabase.bets,
         ...(database.bets || {})
       },
+      
+      ml: {
+        ...defaultDatabase.ml,
+        ...(database.ml || {})
+      },
+
+      miwra: {
+        ...defaultDatabase.miwra,
+        ...(database.miwra || {})
+      
+      },
 
       configuracoes: {
         ...defaultDatabase.configuracoes,
@@ -630,6 +651,14 @@ const Storage = {
 
   getBets() {
     return this.getSection("bets");
+  },
+
+  getML() {
+    return this.getSection("ml");
+  },
+
+  getMiwra() {
+    return this.getSection("miwra");
   },
 
   getTransferencias() {
