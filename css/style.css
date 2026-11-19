@@ -2644,3 +2644,78 @@ form > button:hover,
     width: 100%;
   }
 }
+
+/* ==========================================
+   DASHBOARD — CARDS FINANCEIROS
+   ========================================== */
+
+.cards {
+    gap: 18px;
+}
+
+.metric-card {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 17px;
+    min-height: 125px;
+    padding: 23px;
+    background: linear-gradient(
+        145deg,
+        rgba(190, 18, 60, 0.07),
+        transparent 65%
+    ), #101015;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 17px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.16);
+    transition: transform 0.25s ease, border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(190, 18, 60, 0.35);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+.metric-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 13px;
+    background: rgba(190, 18, 60, 0.13);
+    color: #e34b73;
+}
+
+.metric-content {
+    min-width: 0;
+}
+
+.metric-content span {
+    color: #92929e;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.metric-content strong {
+    display: block;
+    margin-top: 7px;
+    color: #f5f5f7;
+    font-size: 23px;
+    font-weight: 750;
+    letter-spacing: -0.7px;
+}
+
+@media (max-width: 650px) {
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .metric-card {
+        min-height: 105px;
+    }
+}
