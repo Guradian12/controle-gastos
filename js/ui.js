@@ -3808,14 +3808,15 @@ importInput?.addEventListener(
 /**
  * Renderiza o Dashboard do Mercado Livre.
  */
+
 renderMLPage() {
   try {
     const container = document.getElementById("mlDashboard");
+    const content = document.getElementById("mlConteudo");
 
-    if (!container) return;
+    if (!container || !content) return;
 
     const today = new Date();
-
     const month = today.getMonth();
     const year = today.getFullYear();
 
@@ -3849,10 +3850,7 @@ renderMLPage() {
       <div class="ml-stats-grid">
         ${cards.map(card => `
           <div class="ml-stat-card">
-            <span class="ml-stat-label">
-              ${card.label}
-            </span>
-
+            <span class="ml-stat-label">${card.label}</span>
             <strong class="${card.className}">
               ${card.isPercentage
                 ? card.value
@@ -3863,6 +3861,95 @@ renderMLPage() {
       </div>
     `;
 
+    content.innerHTML = `
+      <div class="ml-section">
+        <h2>Nova venda</h2>
+        <p>Cadastre uma venda realizada no Mercado Livre.</p>
+
+        <form id="formML">
+          <div class="form-group">
+            <label for="produtoML">Nome do produto</label>
+            <input
+              type="text"
+              id="produtoML"
+              placeholder="Ex.: Mouse Gamer"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="dataML">Data da venda</label>
+            <input
+              type="date"
+              id="dataML"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="precoCompraML">Preço de compra (R$)</label>
+            <input
+              type="number"
+              id="precoCompraML"
+              min="0.01"
+              step="0.01"
+              placeholder="0,00"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="precoVendaML">Preço de venda (R$)</label>
+            <input
+              type="number"
+              id="precoVendaML"
+              min="0.01"
+              step="0.01"
+              placeholder="0,00"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="taxasML">Taxas do Mercado Livre (R$)</label>
+            <input
+              type="number"
+              id="taxasML"
+              min="0"
+              step="0.01"
+              value="0"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="outrosCustosML">Outros custos (R$)</label>
+            <input
+              type="number"
+              id="outrosCustosML"
+              min="0"
+              step="0.01"
+              value="0"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="descricaoML">Observações</label>
+            <textarea
+              id="descricaoML"
+              placeholder="Informações adicionais (opcional)"
+            ></textarea>
+          </div>
+
+          <button type="submit">
+            Cadastrar venda
+          </button>
+        </form>
+      </div>
+    `;
+
+    this.setDefaultDates();
+    this.bindMLForm();
+
   } catch (error) {
     console.error("Erro ao carregar Dashboard do Mercado Livre:", error);
 
@@ -3872,6 +3959,7 @@ renderMLPage() {
     );
   }
 },
+
 
 /**
  * Renderiza o Dashboard do Miwra.
