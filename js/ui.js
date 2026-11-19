@@ -133,7 +133,7 @@ const UI = {
       "dataReceita",
       "dataGasto",
       "dataPoker",
-      "dataBet"
+      "dataBet",
       "dataML"
     ].forEach(id => {
       const input =
