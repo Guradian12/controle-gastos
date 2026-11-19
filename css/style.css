@@ -2724,10 +2724,15 @@ form > button:hover,
    DASHBOARD PREMIUM — REDESIGN
    ========================================== */
 
-#dashboard {
-    display: flex;
+#dashboard.page {
+    display: none;
     flex-direction: column;
     gap: 25px;
+}
+
+#dashboard.page.active {
+    display: flex;
+}
 }
 
 /* CABEÇALHO */
