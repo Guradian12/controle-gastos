@@ -3945,10 +3945,19 @@ renderMLPage() {
           </button>
         </form>
       </div>
+    
+              </form>
+      </div>
+
+      <div class="ml-section">
+        <h2>Vendas cadastradas</h2>
+        <div id="listaVendasML"></div>
+      </div>
     `;
 
     this.setDefaultDates();
     this.bindMLForm();
+    this.renderMLSalesList();
 
   } catch (error) {
     console.error("Erro ao carregar Dashboard do Mercado Livre:", error);
@@ -3958,6 +3967,90 @@ renderMLPage() {
       "error"
     );
   }
+},
+
+
+/**
+ * Renderiza a lista de vendas do Mercado Livre.
+ */
+renderMLSalesList() {
+  const container = document.getElementById("listaVendasML");
+
+  if (!container) return;
+
+  const sales = ML.filterSales();
+
+  if (!sales.length) {
+    container.innerHTML = `
+      <p class="empty-message">
+        Nenhuma venda cadastrada.
+      </p>
+    `;
+    return;
+  }
+
+  container.innerHTML = sales.map(sale => `
+    <div class="list-item">
+      <div class="list-item-content">
+        <strong>
+          ${this.escapeHTML(sale.produto)}
+        </strong>
+
+        <small>
+          ${this.formatDate(sale.data)}
+          • Lucro: ${this.formatCurrency(sale.lucro)}
+        </small>
+      </div>
+
+      <div class="list-item-actions">
+        <strong class="${sale.lucro >= 0 ? "positive" : "negative"}">
+          ${this.formatCurrency(sale.precoVenda)}
+        </strong>
+
+        <button
+          type="button"
+          class="btn-delete-ml"
+          data-sale-id="${this.escapeHTML(sale.id)}"
+        >
+          Excluir
+        </button>
+      </div>
+    </div>
+  `).join("");
+
+  container.querySelectorAll(".btn-delete-ml").forEach(button => {
+    button.addEventListener("click", () => {
+      const saleId = button.dataset.saleId;
+
+      const confirmed = window.confirm(
+        "Deseja realmente excluir esta venda?"
+      );
+
+      if (!confirmed) return;
+
+      try {
+        const result = ML.deleteSale(saleId);
+
+        if (!result) {
+          throw new Error("Venda não encontrada.");
+        }
+
+        this.showMessage("Venda excluída com sucesso.");
+
+        this.renderMLPage();
+
+        this.refreshAll();
+
+      } catch (error) {
+        console.error(error);
+
+        this.showMessage(
+          error.message || "Não foi possível excluir a venda.",
+          "error"
+        );
+      }
+    });
+  });
 },
 
 
